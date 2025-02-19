@@ -55,7 +55,7 @@ dependencies {
     implementation(platform(libs.androidx.compose.bom))
 
     coreLibraryDesugaring(libs.desugarJdkLibs)
-    testImplementation(libs.junit)
+    testImplementation(libs.junit.junit4)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 }

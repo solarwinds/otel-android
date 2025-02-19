@@ -3,9 +3,14 @@ package com.solarwinds.android;
 import android.app.Application;
 
 
+import java.util.function.Supplier;
+
 import io.opentelemetry.android.OpenTelemetryRum;
 import io.opentelemetry.android.OpenTelemetryRumBuilder;
 import io.opentelemetry.android.config.OtelRumConfig;
+import io.opentelemetry.android.session.SessionProvider;
+import io.opentelemetry.api.common.AttributeKey;
+import io.opentelemetry.api.common.Attributes;
 import io.opentelemetry.exporter.otlp.logs.OtlpGrpcLogRecordExporter;
 import io.opentelemetry.exporter.otlp.metrics.OtlpGrpcMetricExporter;
 import io.opentelemetry.exporter.otlp.trace.OtlpGrpcSpanExporter;
@@ -26,6 +31,10 @@ public class SolarwindsRumBuilder {
 
     private OtelRumConfig otelRumConfig = new OtelRumConfig();
 
+    private SessionProvider sessionProvider = null;
+
+    private String sessionIdKey = "session.id";
+
     public SolarwindsRumBuilder collectorUrl(String collectorUrl) {
         this.collectorUrl = collectorUrl;
         return this;
@@ -41,7 +50,23 @@ public class SolarwindsRumBuilder {
         return this;
     }
 
+    public SolarwindsRumBuilder sessionProvider(SessionProvider sessionProvider) {
+        this.sessionProvider = sessionProvider;
+        return this;
+    }
+
+    public SolarwindsRumBuilder sessionIdKey(String sessionIdKey) {
+        this.sessionIdKey = sessionIdKey;
+        return this;
+    }
+
     public SolarwindsRum build(Application application) {
+        if (sessionProvider != null) {
+            Supplier<Attributes> globalAttributesSupplier = otelRumConfig.getGlobalAttributesSupplier();
+            otelRumConfig.setGlobalAttributes(new SessionIdAppender(globalAttributesSupplier,
+                    AttributeKey.stringKey(sessionIdKey), sessionProvider));
+        }
+
         OpenTelemetryRumBuilder builder = OpenTelemetryRum.builder(application, otelRumConfig);
         builder
                 .addSpanExporterCustomizer(this::createSpanExporter)
