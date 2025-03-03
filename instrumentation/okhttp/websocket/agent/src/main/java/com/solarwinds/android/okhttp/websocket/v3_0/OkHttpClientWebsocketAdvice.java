@@ -1,3 +1,4 @@
+
 /*
  * © SolarWinds Worldwide, LLC. All rights reserved.
  *
@@ -14,22 +15,19 @@
  * limitations under the License.
  */
 
-package com.solarwinds.android;
+package com.solarwinds.android.okhttp.websocket.v3_0;
 
-import static io.opentelemetry.api.common.AttributeKey.stringKey;
+import net.bytebuddy.asm.Advice;
 
-import io.opentelemetry.api.common.Attributes;
-import io.opentelemetry.sdk.resources.Resource;
+import okhttp3.WebSocketListener;
 
-/**
- * Creates a Solarwinds OTel resource
- */
-public final class SolarwindsResourceProvider {
-    public static Resource create() {
-        return Resource.create(
-                Attributes.of(
-                        stringKey("sw.data.module"), "apm"
-                )
-        );
+public class OkHttpClientWebsocketAdvice {
+
+    @Advice.OnMethodEnter
+    public static void enter(
+            @Advice.Argument(value = 1, readOnly = false) WebSocketListener webSocketListener) {
+        if (webSocketListener instanceof WebsocketListenerWrapper) return;
+
+        webSocketListener = new WebsocketListenerWrapper(webSocketListener);
     }
 }

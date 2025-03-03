@@ -10,6 +10,8 @@ val variantToPublish = "release"
 val swoRumVersion: String by rootProject.extra
 
 android {
+    compileSdk = 35
+
     lint {
         warningsAsErrors = true
     }
@@ -102,7 +104,11 @@ signing {
 
 val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
 dependencies {
+    annotationProcessor(libs.findLibrary("auto-service-processor").get())
+    implementation(libs.findLibrary("androidx-annotation").get())
     coreLibraryDesugaring(libs.findLibrary("desugarJdkLibs").get())
+
+    implementation(libs.findLibrary("auto-service-annotations").get())
     testImplementation(libs.findBundle("junit").get())
     testImplementation(libs.findBundle("mocking").get())
 

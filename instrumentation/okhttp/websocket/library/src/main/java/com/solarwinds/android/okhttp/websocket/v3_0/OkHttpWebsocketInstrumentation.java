@@ -1,3 +1,5 @@
+
+
 /*
  * © SolarWinds Worldwide, LLC. All rights reserved.
  *
@@ -14,22 +16,17 @@
  * limitations under the License.
  */
 
-package com.solarwinds.android;
+package com.solarwinds.android.okhttp.websocket.v3_0;
 
-import static io.opentelemetry.api.common.AttributeKey.stringKey;
+import androidx.annotation.NonNull;
+import com.google.auto.service.AutoService;
+import io.opentelemetry.android.instrumentation.AndroidInstrumentation;
+import io.opentelemetry.android.instrumentation.InstallationContext;
 
-import io.opentelemetry.api.common.Attributes;
-import io.opentelemetry.sdk.resources.Resource;
-
-/**
- * Creates a Solarwinds OTel resource
- */
-public final class SolarwindsResourceProvider {
-    public static Resource create() {
-        return Resource.create(
-                Attributes.of(
-                        stringKey("sw.data.module"), "apm"
-                )
-        );
+@AutoService(AndroidInstrumentation.class)
+public class OkHttpWebsocketInstrumentation implements AndroidInstrumentation {
+    @Override
+    public void install(@NonNull InstallationContext ctx) {
+        WebsocketEventGenerator.configure(ctx.getOpenTelemetry());
     }
 }

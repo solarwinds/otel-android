@@ -14,22 +14,23 @@
  * limitations under the License.
  */
 
-package com.solarwinds.android;
+plugins {
+    id("solarwinds.android-library-conventions")
+}
 
-import static io.opentelemetry.api.common.AttributeKey.stringKey;
+description = "Solarwinds OkHttp Websocket library instrumentation for Android"
 
-import io.opentelemetry.api.common.Attributes;
-import io.opentelemetry.sdk.resources.Resource;
-
-/**
- * Creates a Solarwinds OTel resource
- */
-public final class SolarwindsResourceProvider {
-    public static Resource create() {
-        return Resource.create(
-                Attributes.of(
-                        stringKey("sw.data.module"), "apm"
-                )
-        );
+android {
+    namespace = "com.solarwinds.android.okhttp.websocket.library"
+    defaultConfig {
+        consumerProguardFiles("consumer-rules.pro")
     }
+}
+
+dependencies {
+    implementation(libs.opentelemetry.android.instrumentation)
+    implementation(libs.opentelemetry.instrumentation.apiSemconv)
+    implementation(libs.opentelemetry.api.incubator)
+
+    compileOnly(libs.okhttp)
 }
