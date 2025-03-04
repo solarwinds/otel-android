@@ -11,7 +11,10 @@ plugins {
 }
 
 val localProperties = Properties()
-localProperties.load(FileInputStream(rootProject.file("local.properties")))
+val ci = System.getenv("CI").toBoolean()
+if (!ci) {
+    localProperties.load(FileInputStream(rootProject.file("local.properties")))
+}
 
 android {
     namespace = "com.solarwinds.devthoughts"
@@ -29,11 +32,11 @@ android {
 
     buildTypes {
         all {
-            val accessToken = localProperties["api.token"] as String
-            val collectorUrl = localProperties["collector.url"] as String
+            val accessToken = localProperties["api.token"] as String?
+            val collectorUrl = localProperties["collector.url"] as String?
 
-            resValue("string", "api_token", accessToken)
-            resValue("string", "collector_url", collectorUrl)
+            resValue("string", "api_token", accessToken ?: "")
+            resValue("string", "collector_url", collectorUrl ?: "")
         }
         release {
             isMinifyEnabled = false
@@ -62,7 +65,7 @@ dependencies {
     byteBuddy(project(":instrumentation:okhttp:websocket:agent"))
     implementation(project(":instrumentation:okhttp:websocket:library"))
     implementation(libs.androidx.datastore.preferences)
-
+    implementation(libs.androidx.fragment.compose)
     implementation(libs.otel.android.okhttp.lib)
     byteBuddy(libs.otel.android.okhttp.agent)
 

@@ -87,7 +87,7 @@ fun Username(viewModel: OnBoardingViewModel, navigation: (route: Any) -> Unit) {
                     verticalArrangement = Arrangement.SpaceAround,
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    Text("Please enter your username")
+                    Text("Please enter your GitHub username")
                     OutlinedTextField(dev.username ?: "", onValueChange = {
                         viewModel.updateUsername(it)
                         usernameValid = it.isNotEmpty()

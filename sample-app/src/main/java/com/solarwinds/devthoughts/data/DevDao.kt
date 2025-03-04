@@ -20,24 +20,28 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface DevDao {
     @Query("SELECT * FROM Dev")
-   suspend fun findAll(): List<Dev>
+    fun findAll(): Flow<List<Dev>>
+
+    @Query("SELECT * FROM dev WHERE devId == :devId")
+    fun findById(devId: Int): Flow<Dev>
 
     @Query("SELECT * FROM dev WHERE username LIKE :username")
-    suspend fun findByUsername(username: String): List<Dev>
+    fun findByUsername(username: String): Flow<List<Dev>>
 
     @Query("SELECT * FROM dev WHERE favorite_lang LIKE :lang")
-    suspend  fun findByFavoriteLang(lang: String): List<Dev>
+    fun findByFavoriteLang(lang: String): Flow<List<Dev>>
 
     @Query("SELECT * FROM dev WHERE favorite_ide LIKE :ide")
-    suspend  fun findByFavoriteIde(ide: String): List<Dev>
+    fun findByFavoriteIde(ide: String): Flow<List<Dev>>
 
     @Insert
     suspend fun insert(vararg devs: Dev)
 
     @Delete
-    suspend  fun delete(dev: Dev)
+    suspend fun delete(dev: Dev)
 }

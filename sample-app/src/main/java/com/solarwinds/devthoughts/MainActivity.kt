@@ -2,6 +2,11 @@ package com.solarwinds.devthoughts
 
 import android.os.Bundle
 import android.view.Menu
+import android.view.View
+import android.widget.EditText
+import android.widget.TextView
+import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.navigation.NavigationView
 import androidx.navigation.findNavController
@@ -11,25 +16,37 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
+import com.solarwinds.devthoughts.data.AppViewModel
+import com.solarwinds.devthoughts.data.Dev
+import com.solarwinds.devthoughts.data.DevThoughtsDatabase
+import com.solarwinds.devthoughts.data.Repository
+import com.solarwinds.devthoughts.data.Thought
 import com.solarwinds.devthoughts.databinding.ActivityMainBinding
+import kotlinx.coroutines.launch
+
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
+
     private lateinit var binding: ActivityMainBinding
+
+    private lateinit var repository: Repository
+
+    private val appViewModel : AppViewModel by viewModels()
+
+    var dev: Dev? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        repository = Repository.create(DevThoughtsDatabase.getInstance(applicationContext))
         binding = ActivityMainBinding.inflate(layoutInflater)
+
         setContentView(binding.root)
-
         setSupportActionBar(binding.appBarMain.toolbar)
-
         binding.appBarMain.fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null)
-                .setAnchorView(R.id.fab).show()
+            showInputDialog(view)
         }
         val drawerLayout: DrawerLayout = binding.drawerLayout
         val navView: NavigationView = binding.navView
@@ -43,6 +60,23 @@ class MainActivity : AppCompatActivity() {
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+
+        lifecycleScope.launch {
+            repository.findDev(1).collect {
+                if (it != null){
+                    val layout = binding.navView.getHeaderView(0)
+                    val otherInfo: TextView = layout.findViewById(R.id.otherInfo)
+                    val username: TextView = layout.findViewById(R.id.username)
+
+                    val formatedInfo = "${it.favoriteLang} | ${it.favoriteIde}"
+                    otherInfo.text = formatedInfo
+                    username.text = it.username
+
+                    dev = it
+                    appViewModel.updateDev(it)
+                }
+            }
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -54,5 +88,34 @@ class MainActivity : AppCompatActivity() {
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.nav_host_fragment_content_main)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
+    }
+
+    private fun showInputDialog(view: View) {
+        val editText = EditText(this)
+        AlertDialog.Builder(this)
+            .setTitle("What's on your mind?")
+            .setView(editText)
+            .setCancelable(true)
+            .setPositiveButton("Submit") { dialog, _ ->
+                val thought = editText.text.toString()
+                var msg = "Your thought has been registered"
+                if (dev != null) {
+                    repository.writeThought(Thought(0, dev!!.devId, thought))
+                } else {
+                    msg = "Your thought has not been registered"
+                }
+
+                dialog.cancel()
+                Snackbar.make(
+                    view,
+                    msg,
+                    Snackbar.LENGTH_LONG
+                ).setAnchorView(R.id.fab)
+                    .show()
+            }
+            .setNegativeButton("Cancel") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
     }
 }

@@ -21,22 +21,27 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface DevThoughtDao {
     @Query("SELECT * FROM thought")
-    suspend  fun findAll(): List<Thought>
+    fun findAll(): Flow<List<Thought>>
 
     @Query("SELECT * FROM thought WHERE devId == :devId")
-    suspend  fun findByDev(devId: Int): List<Thought>
+    fun findByDev(devId: Int): Flow<List<Thought>>
 
     @Transaction
     @Query("SELECT * FROM dev  WHERE username LIKE :username")
-    suspend  fun findByDevUsername(username: String): List<DevThoughts>
+    fun findByDevUsername(username: String): Flow<List<DevThoughts>>
+
+    @Transaction
+    @Query("SELECT * FROM dev  WHERE devId == :devId")
+    fun findByDevId(devId: Int): Flow<List<DevThoughts>>
 
     @Insert
-    suspend  fun insert(vararg thought: Thought)
+    suspend fun insert(vararg thought: Thought)
 
     @Delete
-    suspend  fun delete(thought: Thought)
+    suspend fun delete(thought: Thought)
 }

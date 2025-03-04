@@ -18,6 +18,7 @@ package com.solarwinds.devthoughts.data
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
 class Repository(private val devDao: DevDao, private val thoughtDao: DevThoughtDao) {
@@ -33,6 +34,14 @@ class Repository(private val devDao: DevDao, private val thoughtDao: DevThoughtD
         coroutineScope.launch {
             thoughtDao.insert(thought)
         }
+    }
+
+    fun findDev(devId: Int): Flow<Dev?> {
+        return devDao.findById(devId)
+    }
+
+    fun findAllThoughts(): Flow<List<Thought>> {
+        return thoughtDao.findAll()
     }
 
     companion object {

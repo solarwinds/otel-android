@@ -55,7 +55,7 @@ publishing {
     publications {
         create<MavenPublication>("maven") {
             groupId = "io.github.appoptics"
-            artifactId = base.archivesName.get()
+            artifactId = computeArtifactId()
             version =  if(versionSuffix != null) "$swoRumVersion-$versionSuffix" else swoRumVersion
 
             afterEvaluate {
@@ -114,4 +114,23 @@ dependencies {
 
     testImplementation(libs.findLibrary("robolectric").get())
     testImplementation(libs.findLibrary("opentelemetry-sdk-testing").get())
+}
+
+fun computeArtifactId(): String {
+    val path = project.path
+    if (!path.contains("instrumentation")) {
+        // Return default artifactId for non auto-instrumentation publications.
+        return project.name
+    }
+
+    // Adding library name to its related auto-instrumentation subprojects.
+    // For example, prepending "okhttp-3.0-" to both the "library" and "agent" subprojects inside the "okhttp-3.0" folder.
+    val match = Regex("[^:]+:[^:]+\$").find(path)
+    var artifactId = match!!.value.replace(":", "-")
+    if (!artifactId.startsWith("instrumentation-")) {
+        artifactId = "instrumentation-$artifactId"
+    }
+
+    logger.debug("Using artifact id: '{}' for subproject: '{}'", artifactId, path)
+    return artifactId
 }
