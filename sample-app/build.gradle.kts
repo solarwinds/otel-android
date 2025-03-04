@@ -1,8 +1,17 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     id("com.android.application")
+    id("net.bytebuddy.byte-buddy-gradle-plugin")
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.ksp)
+    kotlin("plugin.serialization") version "2.0.21"
 }
+
+val localProperties = Properties()
+localProperties.load(FileInputStream(rootProject.file("local.properties")))
 
 android {
     namespace = "com.solarwinds.devthoughts"
@@ -19,6 +28,13 @@ android {
     }
 
     buildTypes {
+        all {
+            val accessToken = localProperties["api.token"] as String
+            val collectorUrl = localProperties["collector.url"] as String
+
+            resValue("string", "api_token", accessToken)
+            resValue("string", "collector_url", collectorUrl)
+        }
         release {
             isMinifyEnabled = false
             proguardFiles(
@@ -43,7 +59,19 @@ android {
 
 dependencies {
     implementation(project(":otel-android"))
+    byteBuddy(project(":instrumentation:okhttp:websocket:agent"))
+    implementation(project(":instrumentation:okhttp:websocket:library"))
+    implementation(libs.androidx.datastore.preferences)
+
+    implementation(libs.otel.android.okhttp.lib)
+    byteBuddy(libs.otel.android.okhttp.agent)
+
+    implementation(libs.okhttp)
     implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.work.manager)
+    implementation(libs.androidx.room)
+    implementation(libs.androidx.room.ktx)
+    ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.constraintlayout)
@@ -52,6 +80,11 @@ dependencies {
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
     implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.material3)
+    implementation(libs.androidx.ui.tooling)
+    implementation(libs.androidx.ui.tooling.preview)
+    implementation(libs.kotlin.serialization)
+    implementation(libs.androidx.navigation.compose)
     implementation(platform(libs.androidx.compose.bom))
 
     coreLibraryDesugaring(libs.desugarJdkLibs)

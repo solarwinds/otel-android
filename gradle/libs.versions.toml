@@ -1,5 +1,6 @@
 [versions]
 agp = "8.7.3"
+datastorePreferences = "1.1.3"
 kotlin = "2.1.10"
 coreKtx = "1.15.0"
 junit5 = "5.11.4"
@@ -27,20 +28,33 @@ okhttp = "4.12.0"
 byteBuddy = "1.17.1"
 work_version = "2.10.0"
 autoService = "1.1.1"
+room_version = "2.6.1"
+navigation-compose = "2.8.8"
 
 [libraries]
 androidx-annotation = "androidx.annotation:annotation:1.9.1"
+androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
+androidx-room = {module = "androidx.room:room-runtime", version.ref = "room_version"}
+androidx-room-ktx = {module = "androidx.room:room-ktx", version.ref = "room_version"}
+androidx-room-compiler = {module = "androidx.room:room-compiler", version.ref = "room_version"}
 androidx-work-manager = { module = "androidx.work:work-runtime", version.ref = "work_version" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "android-junit-version" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso-core" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
-material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 androidx-lifecycle-livedata-ktx = { group = "androidx.lifecycle", name = "lifecycle-livedata-ktx", version.ref = "lifecycle-livedata-ktx" }
 androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycle-viewmodel-ktx" }
 androidx-navigation-fragment-ktx = { group = "androidx.navigation", name = "navigation-fragment-ktx", version.ref = "navigation-fragment-ktx" }
 androidx-navigation-ui-ktx = { group = "androidx.navigation", name = "navigation-ui-ktx", version.ref = "navigation-ui-ktx" }
+androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity-compose" }
+androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
+androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
+androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
+androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
+androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigation-compose" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+kotlin-serialization = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3"
 
 opentelemetry-instrumentation-bom = { module = "io.opentelemetry.instrumentation:opentelemetry-instrumentation-bom", version.ref = "opentelemetry-inst" }
 opentelemetry-bom = { module = "io.opentelemetry:opentelemetry-bom", version.ref = "opentelemetry-sdk" }
@@ -62,8 +76,6 @@ auto-service-processor = { module = "com.google.auto.service:auto-service", vers
 desugarJdkLibs = "com.android.tools:desugar_jdk_libs:2.1.5"
 android-plugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }
 spotless-plugin = { module = "com.diffplug.spotless:spotless-plugin-gradle", version.ref = "spotless" }
-androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity-compose" }
-androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
 
 junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit5" }
 junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit5" }
@@ -84,3 +96,4 @@ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
 publishPlugin = { id = "io.github.gradle-nexus.publish-plugin", version = "2.0.0" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version = "2.1.10-1.0.29" }
