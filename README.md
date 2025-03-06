@@ -28,6 +28,12 @@ To build and run the sample application, configure a `local.properties` file in 
 collector.endpoint=<endpoint>
 api.token=<a valid Solarwinds observability token for the endpoint>
 ```
+#### How to trigger some features
+
+- ANR
+  - Long press on any of you thoughts in the Thought screen
+- Crash
+  - Double tap any of your thoughts in the Thought screen
 
 ## Upgrades
 

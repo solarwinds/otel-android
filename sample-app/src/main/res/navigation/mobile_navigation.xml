@@ -7,15 +7,13 @@
 
     <fragment
         android:id="@+id/nav_home"
-        android:name="com.solarwinds.devthoughts.ui.home.HomeFragment"
-        android:label="@string/menu_home"
-        tools:layout="@layout/fragment_home" />
+        android:name="com.solarwinds.devthoughts.ui.thought.HomeFragment"
+        android:label="@string/thought" />
 
     <fragment
         android:id="@+id/nav_gallery"
-        android:name="com.solarwinds.devthoughts.ui.gallery.GalleryFragment"
-        android:label="@string/menu_gallery"
-        tools:layout="@layout/fragment_gallery" />
+        android:name="com.solarwinds.devthoughts.ui.github.GithubFragment"
+        android:label="@string/github" />
 
     <fragment
         android:id="@+id/nav_slideshow"

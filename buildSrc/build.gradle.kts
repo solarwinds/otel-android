@@ -6,7 +6,7 @@ plugins {
 spotless {
     kotlinGradle {
         ktlint()
-        target("* * / *.gradle.kts")
+        target("**/*.gradle.kts")
     }
 }
 
