@@ -22,6 +22,13 @@ android {
     }
 }
 
+tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "failed")
+    }
+}
+
 afterEvaluate {
     val javadoc by tasks.registering(Javadoc::class) {
         source = android.sourceSets.named("main").get().java.getSourceFiles()
@@ -95,6 +102,10 @@ signing {
 
 val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
 dependencies {
-    testImplementation(libs.findLibrary("opentelemetry-sdk-testing").get())
     coreLibraryDesugaring(libs.findLibrary("desugarJdkLibs").get())
+    testImplementation(libs.findBundle("junit").get())
+    testImplementation(libs.findBundle("mocking").get())
+
+    testImplementation(libs.findLibrary("robolectric").get())
+    testImplementation(libs.findLibrary("opentelemetry-sdk-testing").get())
 }
