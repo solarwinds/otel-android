@@ -25,9 +25,15 @@ This repository includes a sample application that demonstrates some features of
 To build and run the sample application, configure a `local.properties` file in the root of the project. The project requires the following properties:
 
 ```properties
-collector.endpoint=<endpoint>
+collector.url=<swo otel url with scheme i.e [scheme]://[url]>
 api.token=<a valid Solarwinds observability token for the endpoint>
 ```
+#### How to trigger some features
+
+- ANR
+  - Long press on any of you thoughts in the Thought screen
+- Crash
+  - Double tap any of your thoughts in the Thought screen
 
 ## Upgrades
 

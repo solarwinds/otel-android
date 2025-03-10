@@ -23,7 +23,8 @@ import io.opentelemetry.api.common.Attributes;
 public class SolarwindsRumBuilderTest {
     private AutoCloseable mocks;
 
-    @Mock Application application;
+    @Mock
+    Application application;
 
     @Before
     public void setup() {
@@ -39,7 +40,9 @@ public class SolarwindsRumBuilderTest {
     public void verifyAttributesSupplierIsNotModifiedWhenSessionProviderIsNull() {
         SolarwindsRumBuilder solarwindsRumBuilder = new SolarwindsRumBuilder();
         OtelRumConfig otelRumConfig = new OtelRumConfig();
-        otelRumConfig.setGlobalAttributes(Attributes.of(AttributeKey.stringKey("attr"), "value"));
+        otelRumConfig.setGlobalAttributes(Attributes.of(AttributeKey.stringKey("attr"), "value"))
+                .disableNetworkAttributes()
+                .disableInstrumentationDiscovery();
 
         solarwindsRumBuilder.otelRumConfig(otelRumConfig)
                 .apiToken("token")
@@ -52,7 +55,9 @@ public class SolarwindsRumBuilderTest {
     public void verifyAttributesSupplierIsModifiedWhenSessionProviderIsNotNull() {
         SolarwindsRumBuilder solarwindsRumBuilder = new SolarwindsRumBuilder();
         OtelRumConfig otelRumConfig = new OtelRumConfig();
-        otelRumConfig.setGlobalAttributes(Attributes.of(AttributeKey.stringKey("attr"), "value"));
+        otelRumConfig.setGlobalAttributes(Attributes.of(AttributeKey.stringKey("attr"), "value"))
+                .disableNetworkAttributes()
+                .disableInstrumentationDiscovery();
 
         solarwindsRumBuilder.otelRumConfig(otelRumConfig)
                 .apiToken("token")
