@@ -23,6 +23,15 @@ import com.solarwinds.devthoughts.data.DevThoughtsDatabase
 import com.solarwinds.devthoughts.data.Repository
 import com.solarwinds.devthoughts.data.Thought
 import com.solarwinds.devthoughts.databinding.ActivityMainBinding
+import com.solarwinds.devthoughts.ui.onboarding.sessionIdPreferenceKey
+import com.solarwinds.devthoughts.utils.dataStore
+import com.solarwinds.devthoughts.utils.meterProviderName
+import com.solarwinds.devthoughts.utils.solarwindsRum
+import io.opentelemetry.api.common.AttributeKey
+import io.opentelemetry.api.common.Attributes
+import io.opentelemetry.api.metrics.LongCounter
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 
@@ -34,9 +43,13 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var repository: Repository
 
-    private val appViewModel : AppViewModel by viewModels()
+    private val appViewModel: AppViewModel by viewModels()
 
     var dev: Dev? = null
+
+    private var sessionId: String = "unset"
+
+    private lateinit var thoughtCounter: LongCounter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,21 +75,37 @@ class MainActivity : AppCompatActivity() {
         navView.setupWithNavController(navController)
 
         lifecycleScope.launch {
-            repository.findDev(1).collect {
-                if (it != null){
+            repository.findAllDev().collect {
+                if (it.isNotEmpty()) {
+                    val lastDev = it.last()
                     val layout = binding.navView.getHeaderView(0)
                     val otherInfo: TextView = layout.findViewById(R.id.otherInfo)
                     val username: TextView = layout.findViewById(R.id.username)
 
-                    val formatedInfo = "${it.favoriteLang} | ${it.favoriteIde}"
+                    val formatedInfo = "${lastDev.favoriteLang} | ${lastDev.favoriteIde}"
                     otherInfo.text = formatedInfo
-                    username.text = it.username
+                    username.text = lastDev.username
 
-                    dev = it
-                    appViewModel.updateDev(it)
+                    dev = lastDev
+                    appViewModel.updateDev(lastDev)
                 }
             }
         }
+
+        lifecycleScope.launch {
+            dataStore.data.map { settings ->
+                settings[sessionIdPreferenceKey] ?: "unset"
+            }.collectLatest {
+                sessionId = it
+            }
+        }
+
+        thoughtCounter = this.solarwindsRum().openTelemetryRum
+            .openTelemetry
+            .meterProvider
+            .get(this.meterProviderName)
+            .counterBuilder("thought.count")
+            .build()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -101,6 +130,12 @@ class MainActivity : AppCompatActivity() {
                 var msg = "Your thought has been registered"
                 if (dev != null) {
                     repository.writeThought(Thought(0, dev!!.devId, thought))
+                    thoughtCounter.add(
+                        1, Attributes.of(
+                            AttributeKey.stringKey("username"), dev!!.username!!,
+                            AttributeKey.stringKey("session.id"), sessionId,
+                        )
+                    )
                 } else {
                     msg = "Your thought has not been registered"
                 }

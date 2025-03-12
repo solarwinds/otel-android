@@ -44,6 +44,10 @@ class Repository(private val devDao: DevDao, private val thoughtDao: DevThoughtD
         return thoughtDao.findAll()
     }
 
+    fun findAllDev(): Flow<List<Dev>> {
+        return devDao.findAll()
+    }
+
     companion object {
         fun create(database: DevThoughtsDatabase): Repository =
             Repository(database.devDao(), database.devThoughtDao())

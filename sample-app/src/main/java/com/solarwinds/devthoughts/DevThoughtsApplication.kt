@@ -6,21 +6,35 @@ import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import com.solarwinds.android.SolarwindsRum
 import com.solarwinds.android.SolarwindsRumBuilder
+import com.solarwinds.devthoughts.ui.onboarding.sessionIdPreferenceKey
 import com.solarwinds.devthoughts.utils.WebsocketWorker
+import com.solarwinds.devthoughts.utils.dataStore
 import io.opentelemetry.android.session.SessionProvider
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import java.util.concurrent.TimeUnit
 
 class DevThoughtsApplication : Application() {
+    companion object {
+        lateinit var solarwindsRum: SolarwindsRum
+    }
+
     override fun onCreate() {
         super.onCreate()
         val collectorUrl = resources.getString(R.string.collector_url)
         val apiToken = resources.getString(R.string.api_token)
-        val solarwindsRum = SolarwindsRumBuilder()
+        solarwindsRum = SolarwindsRumBuilder()
             .collectorUrl(collectorUrl)
             .sessionProvider(object : SessionProvider {
                 override fun getSessionId(): String {
-                    return this@DevThoughtsApplication.applicationInfo.uid.toString()
+                    lateinit var id: String
+                    runBlocking {
+                        val settings = dataStore.data.first()
+                        id = settings[sessionIdPreferenceKey] ?: "unset"
+                    }
+                    return id
                 }
             })
             .apiToken(apiToken)

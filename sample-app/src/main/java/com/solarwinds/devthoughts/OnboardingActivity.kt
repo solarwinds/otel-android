@@ -49,11 +49,14 @@ import com.solarwinds.devthoughts.ui.onboarding.FavoriteLang
 import com.solarwinds.devthoughts.ui.onboarding.IdeRoute
 import com.solarwinds.devthoughts.ui.onboarding.LangRoute
 import com.solarwinds.devthoughts.ui.onboarding.Loading
+import com.solarwinds.devthoughts.ui.onboarding.SessionId
+import com.solarwinds.devthoughts.ui.onboarding.SessionIdRoute
 import com.solarwinds.devthoughts.ui.onboarding.Username
 import com.solarwinds.devthoughts.ui.onboarding.UsernameRoute
-import com.solarwinds.devthoughts.ui.onboarding.dataStore
 import com.solarwinds.devthoughts.ui.onboarding.onBoardingPreferenceKey
+import com.solarwinds.devthoughts.ui.onboarding.sessionIdPreferenceKey
 import com.solarwinds.devthoughts.ui.theme.AppTheme
+import com.solarwinds.devthoughts.utils.dataStore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.map
@@ -80,8 +83,7 @@ class OnboardingActivity : ComponentActivity() {
                     LaunchedEffect(onBoardingPreferenceKey) {
                         applicationContext.dataStore.data.map { settings ->
                             settings[onBoardingPreferenceKey] ?: false
-                        }.collectLatest { onBoard ->
-                            viewmodel.updateHasOnboarded(onBoard)
+                        }.collectLatest {
                             loading = false
                         }
                     }
@@ -92,6 +94,7 @@ class OnboardingActivity : ComponentActivity() {
                         LaunchedEffect(true) {
                             applicationContext.dataStore.edit { settings ->
                                 settings[onBoardingPreferenceKey] = true
+                                settings[sessionIdPreferenceKey] = viewmodel.sessionId.value
                             }
 
                             launch(Dispatchers.IO) {
@@ -140,7 +143,11 @@ class OnboardingActivity : ComponentActivity() {
                                 }
 
                                 composable<IdeRoute> {
-                                    FavoriteIde(viewmodel, navigation) {
+                                    FavoriteIde(viewmodel, navigation)
+                                }
+
+                                composable<SessionIdRoute> {
+                                    SessionId(viewmodel, navigation) {
                                         viewmodel.updateHasOnboarded(true)
                                     }
                                 }
