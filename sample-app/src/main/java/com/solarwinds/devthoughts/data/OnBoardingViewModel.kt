@@ -28,11 +28,15 @@ class OnBoardingViewModel : ViewModel() {
 
     private val _hasOnboardedDb = MutableStateFlow(false)
 
+    private val _sessionId = MutableStateFlow("")
+
     val dev = _dev.asStateFlow()
 
     val hasOnboard = _hasOnboarded.asStateFlow()
 
     val hasOnboardDb = _hasOnboarded.asStateFlow()
+
+    val sessionId = _sessionId.asStateFlow()
 
     fun updateUsername(username: String) {
         _dev.update {
@@ -61,6 +65,12 @@ class OnBoardingViewModel : ViewModel() {
     fun updateHasOnboardedDb(onboard: Boolean) {
         _hasOnboardedDb.update {
             onboard
+        }
+    }
+
+    fun updateSessionId(sessionId: String) {
+        _sessionId.update {
+            sessionId
         }
     }
 

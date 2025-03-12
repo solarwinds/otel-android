@@ -16,7 +16,6 @@
 
 package com.solarwinds.devthoughts.ui.onboarding
 
-import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -41,10 +40,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
-import androidx.datastore.preferences.preferencesDataStore
+import androidx.datastore.preferences.core.stringPreferencesKey
 import com.solarwinds.devthoughts.data.OnBoardingViewModel
 import kotlinx.serialization.Serializable
 
@@ -58,9 +55,13 @@ object LangRoute
 @Serializable
 object IdeRoute
 
+@Serializable
+object SessionIdRoute
+
 val onBoardingPreferenceKey = booleanPreferencesKey("onboarded")
 
-val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
+val sessionIdPreferenceKey = stringPreferencesKey("session-id")
+
 
 @Composable
 fun Username(viewModel: OnBoardingViewModel, navigation: (route: Any) -> Unit) {
@@ -170,8 +171,7 @@ fun FavoriteLang(viewModel: OnBoardingViewModel, navigation: (route: Any) -> Uni
 @Composable
 fun FavoriteIde(
     viewModel: OnBoardingViewModel,
-    navigation: (route: Any) -> Unit,
-    finishOnboarding: () -> Unit
+    navigation: (route: Any) -> Unit
 ) {
     val dev by viewModel.dev.collectAsState()
     var ideValid by remember { mutableStateOf(false) }
@@ -218,6 +218,65 @@ fun FavoriteIde(
             }
             TextButton(
                 enabled = ideValid,
+                onClick = { navigation(SessionIdRoute) },
+            ) {
+                Text("Next")
+            }
+        }
+    }
+}
+
+@Composable
+fun SessionId(
+    viewModel: OnBoardingViewModel,
+    navigation: (route: Any) -> Unit,
+    finishOnboarding: () -> Unit
+) {
+    val sessionId by viewModel.sessionId.collectAsState()
+    var idValid by remember { mutableStateOf(false) }
+
+    Column(
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.padding(horizontal = 16.dp)
+    ) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(150.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .padding(8.dp)
+                    .fillMaxSize()
+            ) {
+                Column(
+                    verticalArrangement = Arrangement.SpaceAround,
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    Text("Please enter a session id")
+                    OutlinedTextField(sessionId, onValueChange = {
+                        viewModel.updateSessionId(it)
+                        idValid = it.isNotEmpty()
+                    }, label = { Text("Session id") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            }
+        }
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            TextButton(
+                onClick = {
+                    navigation(LangRoute)
+                },
+            ) {
+                Text("Previous")
+            }
+            TextButton(
+                enabled = idValid,
                 onClick = finishOnboarding,
             ) {
                 Text("Finish")

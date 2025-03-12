@@ -1,5 +1,6 @@
 package com.solarwinds.devthoughts.ui.github
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -22,21 +23,56 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.compose.content
+import androidx.lifecycle.lifecycleScope
 import com.solarwinds.devthoughts.data.AppViewModel
 import com.solarwinds.devthoughts.data.GitHubEvent
+import com.solarwinds.devthoughts.utils.meterProviderName
+import com.solarwinds.devthoughts.utils.solarwindsRum
+import com.solarwinds.devthoughts.ui.onboarding.sessionIdPreferenceKey
 import com.solarwinds.devthoughts.ui.theme.AppTheme
+import com.solarwinds.devthoughts.utils.dataStore
+import io.opentelemetry.api.common.AttributeKey
+import io.opentelemetry.api.common.Attributes
+import io.opentelemetry.api.metrics.LongGauge
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
 import okhttp3.Request
 
 class GithubFragment : Fragment() {
     private val json = Json { ignoreUnknownKeys = true }
+
     private val client = OkHttpClient()
+
     private val urlPlaceHolder = "https://api.github.com/users/%s/events"
 
     private val appViewModel: AppViewModel by activityViewModels()
+
+    private lateinit var githubActivityGauge: LongGauge
+
+    private var sessionId: String = "unset"
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        val solarwindsRum = context.solarwindsRum()
+        githubActivityGauge = solarwindsRum.openTelemetryRum.openTelemetry.meterProvider
+            .get(context.meterProviderName)
+            .gaugeBuilder("github.events")
+            .ofLongs()
+            .build()
+
+        lifecycleScope.launch {
+            context.dataStore.data.map { settings ->
+                settings[sessionIdPreferenceKey] ?: "unset"
+            }.collectLatest {
+                sessionId = it
+            }
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -94,6 +130,13 @@ class GithubFragment : Fragment() {
                     gitHubEvents = json.decodeFromString<List<GitHubEvent>>(payload)
 
                 }
+                githubActivityGauge.set(
+                    gitHubEvents.size.toLong(),
+                    Attributes.of(
+                        AttributeKey.stringKey("username"), it!!.username!!,
+                        AttributeKey.stringKey("session.id"), sessionId,
+                    )
+                )
                 emit(gitHubEvents)
 
             } catch (e: Throwable) {
