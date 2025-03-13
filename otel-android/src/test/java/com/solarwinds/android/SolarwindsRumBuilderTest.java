@@ -4,16 +4,13 @@ package com.solarwinds.android;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
-import android.app.Application;
-
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.work.testing.WorkManagerTestInitHelper;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 
 import io.opentelemetry.android.config.OtelRumConfig;
 import io.opentelemetry.api.common.AttributeKey;
@@ -21,19 +18,10 @@ import io.opentelemetry.api.common.Attributes;
 
 @RunWith(AndroidJUnit4.class)
 public class SolarwindsRumBuilderTest {
-    private AutoCloseable mocks;
-
-    @Mock
-    Application application;
 
     @Before
     public void setup() {
-        mocks = MockitoAnnotations.openMocks(this);
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        mocks.close();
+        WorkManagerTestInitHelper.initializeTestWorkManager(ApplicationProvider.getApplicationContext());
     }
 
     @Test
@@ -47,7 +35,7 @@ public class SolarwindsRumBuilderTest {
         solarwindsRumBuilder.otelRumConfig(otelRumConfig)
                 .apiToken("token")
                 .collectorUrl("http://localhost")
-                .build(application);
+                .build(ApplicationProvider.getApplicationContext());
         assertFalse(otelRumConfig.getGlobalAttributesSupplier() instanceof SessionIdAppender);
     }
 
@@ -63,7 +51,7 @@ public class SolarwindsRumBuilderTest {
                 .apiToken("token")
                 .collectorUrl("http://localhost")
                 .sessionProvider(() -> "new-session-id")
-                .build(application);
+                .build(ApplicationProvider.getApplicationContext());
 
         assertInstanceOf(SessionIdAppender.class, otelRumConfig.getGlobalAttributesSupplier());
     }

@@ -37,6 +37,14 @@ dependencyResolutionManagement {
             url = uri("https://oss.sonatype.org/content/repositories/snapshots/")
             mavenContent { snapshotsOnly() }
         }
+
+        maven {
+            url = uri("https://maven.pkg.github.com/solarwinds/joboe")
+            credentials {
+                username = System.getenv("GITHUB_USERNAME")
+                password = System.getenv("GITHUB_TOKEN")
+            }
+        }
     }
 }
 
