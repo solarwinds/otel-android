@@ -21,7 +21,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [Dev::class, Thought::class], version = 1)
+@Database(entities = [Dev::class, Thought::class], version = 1, exportSchema = false)
 abstract class DevThoughtsDatabase : RoomDatabase() {
 
     abstract fun devDao(): DevDao

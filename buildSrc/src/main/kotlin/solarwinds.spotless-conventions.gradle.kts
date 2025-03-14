@@ -7,13 +7,11 @@ plugins {
 spotless {
     java {
         googleJavaFormat().aosp()
-        licenseHeaderFile(rootProject.file("gradle/spotless.license.java"), "(package|import|public)")
         target("src/**/*.java")
     }
     plugins.withId("org.jetbrains.kotlin.jvm") {
         kotlin {
             ktlint()
-            licenseHeaderFile(rootProject.file("gradle/spotless.license.java"), "(package|import|public)")
         }
     }
     kotlinGradle {
