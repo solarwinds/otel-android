@@ -4,13 +4,16 @@ package com.solarwinds.android;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
-import androidx.test.core.app.ApplicationProvider;
-import androidx.test.ext.junit.runners.AndroidJUnit4;
-import androidx.work.testing.WorkManagerTestInitHelper;
+import android.app.Application;
 
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import io.opentelemetry.android.config.OtelRumConfig;
 import io.opentelemetry.api.common.AttributeKey;
@@ -18,10 +21,19 @@ import io.opentelemetry.api.common.Attributes;
 
 @RunWith(AndroidJUnit4.class)
 public class SolarwindsRumBuilderTest {
+    private AutoCloseable mocks;
+
+    @Mock
+    Application application;
 
     @Before
     public void setup() {
-        WorkManagerTestInitHelper.initializeTestWorkManager(ApplicationProvider.getApplicationContext());
+        mocks = MockitoAnnotations.openMocks(this);
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        mocks.close();
     }
 
     @Test
@@ -35,7 +47,7 @@ public class SolarwindsRumBuilderTest {
         solarwindsRumBuilder.otelRumConfig(otelRumConfig)
                 .apiToken("token")
                 .collectorUrl("http://localhost")
-                .build(ApplicationProvider.getApplicationContext());
+                .build(application);
         assertFalse(otelRumConfig.getGlobalAttributesSupplier() instanceof SessionIdAppender);
     }
 
@@ -51,7 +63,7 @@ public class SolarwindsRumBuilderTest {
                 .apiToken("token")
                 .collectorUrl("http://localhost")
                 .sessionProvider(() -> "new-session-id")
-                .build(ApplicationProvider.getApplicationContext());
+                .build(application);
 
         assertInstanceOf(SessionIdAppender.class, otelRumConfig.getGlobalAttributesSupplier());
     }
