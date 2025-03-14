@@ -17,10 +17,6 @@
 package com.solarwinds.android;
 
 import android.app.Application;
-
-
-import java.util.function.Supplier;
-
 import io.opentelemetry.android.OpenTelemetryRum;
 import io.opentelemetry.android.OpenTelemetryRumBuilder;
 import io.opentelemetry.android.config.OtelRumConfig;
@@ -34,11 +30,9 @@ import io.opentelemetry.sdk.logs.export.LogRecordExporter;
 import io.opentelemetry.sdk.metrics.SdkMeterProviderBuilder;
 import io.opentelemetry.sdk.metrics.export.PeriodicMetricReader;
 import io.opentelemetry.sdk.trace.export.SpanExporter;
+import java.util.function.Supplier;
 
-
-/**
- * Builder for {@link SolarwindsRum} that simplifies configuration of the underlying OTel SDK
- */
+/** Builder for {@link SolarwindsRum} that simplifies configuration of the underlying OTel SDK */
 public class SolarwindsRumBuilder {
 
     private String collectorUrl;
@@ -78,14 +72,17 @@ public class SolarwindsRumBuilder {
 
     public SolarwindsRum build(Application application) {
         if (sessionProvider != null) {
-            Supplier<Attributes> globalAttributesSupplier = otelRumConfig.getGlobalAttributesSupplier();
-            otelRumConfig.setGlobalAttributes(new SessionIdAppender(globalAttributesSupplier,
-                    AttributeKey.stringKey(sessionIdKey), sessionProvider));
+            Supplier<Attributes> globalAttributesSupplier =
+                    otelRumConfig.getGlobalAttributesSupplier();
+            otelRumConfig.setGlobalAttributes(
+                    new SessionIdAppender(
+                            globalAttributesSupplier,
+                            AttributeKey.stringKey(sessionIdKey),
+                            sessionProvider));
         }
 
         OpenTelemetryRumBuilder builder = OpenTelemetryRum.builder(application, otelRumConfig);
-        builder
-                .addSpanExporterCustomizer(this::createSpanExporter)
+        builder.addSpanExporterCustomizer(this::createSpanExporter)
                 .addMeterProviderCustomizer(this::customizeMetricProvider)
                 .addLogRecordExporterCustomizer(this::createLogExporter)
                 .mergeResource(SolarwindsResourceProvider.create());
@@ -100,18 +97,16 @@ public class SolarwindsRumBuilder {
                 .build();
     }
 
-    private SdkMeterProviderBuilder customizeMetricProvider(SdkMeterProviderBuilder sdkMeterProviderBuilder, Application application) {
-        OtlpGrpcMetricExporter metricExporter = OtlpGrpcMetricExporter.builder()
-                .setEndpoint(collectorUrl)
-                .addHeader("authorization", String.format("Bearer %s", apiToken))
-                .build();
+    private SdkMeterProviderBuilder customizeMetricProvider(
+            SdkMeterProviderBuilder sdkMeterProviderBuilder, Application application) {
+        OtlpGrpcMetricExporter metricExporter =
+                OtlpGrpcMetricExporter.builder()
+                        .setEndpoint(collectorUrl)
+                        .addHeader("authorization", String.format("Bearer %s", apiToken))
+                        .build();
 
-        return sdkMeterProviderBuilder
-                .registerMetricReader(
-                        PeriodicMetricReader.create(
-                                metricExporter
-                        )
-                );
+        return sdkMeterProviderBuilder.registerMetricReader(
+                PeriodicMetricReader.create(metricExporter));
     }
 
     private OtlpGrpcLogRecordExporter createLogExporter(LogRecordExporter logRecordExporter) {

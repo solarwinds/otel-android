@@ -1,4 +1,3 @@
-
 /*
  * © SolarWinds Worldwide, LLC. All rights reserved.
  *
@@ -18,7 +17,6 @@
 package com.solarwinds.android.okhttp.websocket.v3_0;
 
 import net.bytebuddy.asm.Advice;
-
 import okhttp3.WebSocketListener;
 
 public class OkHttpClientWebsocketAdvice {

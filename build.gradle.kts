@@ -34,6 +34,11 @@ group = "io.github.appoptics"
 val versionSuffix: String? = System.getenv("SW_RUM_VERSION_SUFFIX")
 version = if (versionSuffix != null) "$swoRumVersion-$versionSuffix" else swoRumVersion
 
+
+subprojects {
+    apply(plugin = "solarwinds.spotless-conventions")
+}
+
 nexusPublishing {
     repositories {
         sonatype {

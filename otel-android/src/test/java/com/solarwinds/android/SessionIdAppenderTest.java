@@ -1,16 +1,13 @@
 package com.solarwinds.android;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import static io.opentelemetry.api.common.AttributeKey.stringKey;
-
-import org.junit.jupiter.api.Test;
-
-import java.util.function.Supplier;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import io.opentelemetry.android.session.SessionProvider;
 import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.api.common.Attributes;
+import java.util.function.Supplier;
+import org.junit.jupiter.api.Test;
 
 class SessionIdAppenderTest {
     private SessionIdAppender tested;
@@ -29,25 +26,29 @@ class SessionIdAppenderTest {
 
     @Test
     void returnDelegateAttributeWithSessionIdAdded() {
-        tested = new SessionIdAppender(() -> Attributes.of(stringKey("attr"), "value"),
-                sessionKey,
-                sessionProvider);
+        tested =
+                new SessionIdAppender(
+                        () -> Attributes.of(stringKey("attr"), "value"),
+                        sessionKey,
+                        sessionProvider);
         Attributes attributes = tested.get();
 
         assertEquals(
-                Attributes.of(sessionKey, sessionProvider.getSessionId(), stringKey("attr"), "value"),
+                Attributes.of(
+                        sessionKey, sessionProvider.getSessionId(), stringKey("attr"), "value"),
                 attributes);
     }
 
     @Test
     void returnDelegateAttributeWithSessionIdOverwritten() {
-        Supplier<Attributes> delegate = () -> Attributes.of(stringKey("attr"), "value",
-                sessionKey, "old-id");
+        Supplier<Attributes> delegate =
+                () -> Attributes.of(stringKey("attr"), "value", sessionKey, "old-id");
         tested = new SessionIdAppender(delegate, sessionKey, sessionProvider);
         Attributes attributes = tested.get();
 
-        assertEquals(Attributes.of(sessionKey, sessionProvider.getSessionId(),
-                        stringKey("attr"), "value"),
+        assertEquals(
+                Attributes.of(
+                        sessionKey, sessionProvider.getSessionId(), stringKey("attr"), "value"),
                 attributes);
     }
 }
