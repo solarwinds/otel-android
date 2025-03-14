@@ -9,6 +9,7 @@ going to explain which actions trigger telemetry generation.
   - There is a websocket client that connects to `https://echo.websocket.org/.ws`. This generates
   event for websocket connection. There's no specific action required from the user to generate these
   websocket events. Also, events are generated when you cause a crash.
+  - Trigger a crash: double tap any of your thoughts in the Thought screen.
 - Metric
   - Metrics will generated when the user adds thought or visits the GitHub screens. The metric names
   are `thought.count` and `github.events`
@@ -16,5 +17,6 @@ going to explain which actions trigger telemetry generation.
   - Spans are generated for the Android activity and fragment lifecycle events. These doesn't require
   any specific user action. Spans are also generated during the websocket connection and when a Github
   API request is made when user enters the Github screen. Spans are also generated when you cause an ANR
+  - Trigger an ANR: long press on any of you thoughts in the Thought screen.
 - Logs
   - No logs yet. Although, events are exported as logs.
