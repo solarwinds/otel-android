@@ -19,20 +19,6 @@ package com.solarwinds.android;
 import android.app.Application;
 
 
-import androidx.work.Constraints;
-import androidx.work.Data;
-import androidx.work.ExistingPeriodicWorkPolicy;
-import androidx.work.NetworkType;
-import androidx.work.PeriodicWorkRequest;
-import androidx.work.WorkManager;
-
-import com.solarwinds.android.sampling.AndroidSettingsFetcher;
-import com.solarwinds.android.sampling.AndroidSettingsWorker;
-import com.solarwinds.android.sampling.SolarwindsSampler;
-import com.solarwinds.joboe.sampling.SamplingConfiguration;
-import com.solarwinds.joboe.sampling.SettingsManager;
-
-import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 import io.opentelemetry.android.OpenTelemetryRum;
@@ -47,7 +33,6 @@ import io.opentelemetry.exporter.otlp.trace.OtlpGrpcSpanExporter;
 import io.opentelemetry.sdk.logs.export.LogRecordExporter;
 import io.opentelemetry.sdk.metrics.SdkMeterProviderBuilder;
 import io.opentelemetry.sdk.metrics.export.PeriodicMetricReader;
-import io.opentelemetry.sdk.trace.SdkTracerProviderBuilder;
 import io.opentelemetry.sdk.trace.export.SpanExporter;
 
 
@@ -100,27 +85,12 @@ public class SolarwindsRumBuilder {
 
         OpenTelemetryRumBuilder builder = OpenTelemetryRum.builder(application, otelRumConfig);
         builder
-                .mergeResource(SolarwindsResourceProvider.create())
                 .addSpanExporterCustomizer(this::createSpanExporter)
-                .addLogRecordExporterCustomizer(this::createLogExporter)
                 .addMeterProviderCustomizer(this::customizeMetricProvider)
-                .addTracerProviderCustomizer(this::customizeTracerProvider);
+                .addLogRecordExporterCustomizer(this::createLogExporter)
+                .mergeResource(SolarwindsResourceProvider.create());
 
-        Data data = new Data.Builder()
-                .putString("appName", readAppName(application))
-                .putString("collectorUrl", collectorUrl)
-                .putString("apiToken", apiToken)
-                .build();
-
-        scheduleWorker(application, data);
-        SettingsManager.initialize(new AndroidSettingsFetcher(),
-                SamplingConfiguration.builder()
-                        .build());
         return new SolarwindsRum(builder.build());
-    }
-
-    private SdkTracerProviderBuilder customizeTracerProvider(SdkTracerProviderBuilder sdkTracerProviderBuilder, Application application) {
-        return sdkTracerProviderBuilder.setSampler(new SolarwindsSampler());
     }
 
     private OtlpGrpcSpanExporter createSpanExporter(SpanExporter spanExporter) {
@@ -149,34 +119,5 @@ public class SolarwindsRumBuilder {
                 .setEndpoint(collectorUrl)
                 .addHeader("authorization", String.format("Bearer %s", apiToken))
                 .build();
-    }
-
-    private static String readAppName(Application application) {
-        try {
-            int stringId =
-                    application.getApplicationContext().getApplicationInfo().labelRes;
-            return application.getApplicationContext().getString(stringId);
-        } catch (Throwable e) {
-            return "unknown_service:android";
-        }
-    }
-
-    private void scheduleWorker(Application application, Data data) {
-        Constraints constraints = new Constraints.Builder()
-                .setRequiredNetworkType(NetworkType.CONNECTED)
-                .setRequiresBatteryNotLow(true)
-                .build();
-
-        PeriodicWorkRequest periodicWorkRequest = new PeriodicWorkRequest.Builder(AndroidSettingsWorker.class, 1, TimeUnit.MINUTES)
-                .setConstraints(constraints)
-                .setInputData(data)
-                .build();
-
-        WorkManager workManager = WorkManager.getInstance(application.getApplicationContext());
-        workManager.enqueueUniquePeriodicWork(
-                AndroidSettingsFetcher.class.getSimpleName(),
-                ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
-                periodicWorkRequest
-        );
     }
 }

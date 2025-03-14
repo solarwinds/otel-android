@@ -1,5 +1,3 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-
 /*
  * © SolarWinds Worldwide, LLC. All rights reserved.
  *
@@ -18,7 +16,6 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
     id("solarwinds.android-library-conventions")
-    id("com.gradleup.shadow") version("8.3.5")
 }
 
 android {
@@ -56,21 +53,10 @@ dependencies {
 
     mockitoAgent(libs.mockito.core) { isTransitive = false }
     implementation(libs.opentelemetry.exporter.otlp)
-    implementation(libs.sampling)
-    implementation(libs.okhttp)
-    implementation(libs.opentelemetry.instrumentation.apiSemconv)
-    implementation(libs.jackson.jr.objects)
-    implementation(libs.androidx.work.manager)
 
     testImplementation(libs.androidx.junit)
-    testImplementation(libs.androidx.work.test)
-    testImplementation(libs.okhttp.mockwebserver)
 }
 
 tasks.withType<Test> {
     jvmArgs("-javaagent:${mockitoAgent.asPath}")
-}
-
-tasks.withType<ShadowJar>{
-    relocate("okhttp.","com.solarwinds.android.shaded.")
 }
