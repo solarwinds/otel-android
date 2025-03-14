@@ -1,5 +1,3 @@
-
-
 /*
  * © SolarWinds Worldwide, LLC. All rights reserved.
  *

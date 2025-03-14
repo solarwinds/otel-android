@@ -18,9 +18,7 @@ package com.solarwinds.android;
 
 import io.opentelemetry.android.OpenTelemetryRum;
 
-/**
- * Provides user-friendly interface for generating OTel telemetry
- */
+/** Provides user-friendly interface for generating OTel telemetry */
 public class SolarwindsRum {
     private final OpenTelemetryRum openTelemetryRum;
 
