@@ -28,12 +28,8 @@ To build and run the sample application, configure a `local.properties` file in 
 collector.url=<swo otel url with scheme i.e [scheme]://[url]>
 api.token=<a valid Solarwinds observability token for the endpoint>
 ```
-#### How to trigger some features
 
-- ANR
-  - Long press on any of you thoughts in the Thought screen
-- Crash
-  - Double tap any of your thoughts in the Thought screen
+See its [README](sample-app/README.md) for details. 
 
 ## Upgrades
 
