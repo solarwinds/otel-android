@@ -65,9 +65,9 @@ public class SessionIdBasedSampler implements Sampler {
     }
 
     private long hashBytes(byte[] bytes) {
-        long hash = 98764321261L;
+        long hash = 0xcbf29ce484222325L;
         for (byte bite : bytes) {
-            hash = (hash * 343443379) ^ (bite & 0xff);
+            hash = (hash * 1099511628211L) ^ bite;
         }
         return hash & Long.MAX_VALUE;
     }
