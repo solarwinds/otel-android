@@ -50,7 +50,7 @@ public class SolarwindsRumBuilder {
 
     private String sessionIdKey = "session.id";
 
-    private double sampleRatio = 0.5;
+    private double scaleRatio = 0.5;
 
     public SolarwindsRumBuilder collectorUrl(String collectorUrl) {
         this.collectorUrl = collectorUrl;
@@ -77,8 +77,8 @@ public class SolarwindsRumBuilder {
         return this;
     }
 
-    public SolarwindsRumBuilder sampleRatio(double sampleRatio) {
-        this.sampleRatio = sampleRatio;
+    public SolarwindsRumBuilder scaleRatio(double scaleRatio) {
+        this.scaleRatio = scaleRatio;
         return this;
     }
 
@@ -103,7 +103,7 @@ public class SolarwindsRumBuilder {
     private SdkTracerProviderBuilder customizeTracerProvider(
             SdkTracerProviderBuilder sdkTracerProviderBuilder, Application application) {
         return sdkTracerProviderBuilder.setSampler(
-                new SessionIdBasedSampler(sampleRatio, sessionProvider));
+                new SessionIdBasedSampler(scaleRatio, sessionProvider));
     }
 
     private OtlpGrpcSpanExporter createSpanExporter(SpanExporter spanExporter) {

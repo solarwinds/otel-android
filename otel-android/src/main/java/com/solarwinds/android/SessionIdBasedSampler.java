@@ -18,16 +18,16 @@ import java.util.Locale;
  */
 public class SessionIdBasedSampler implements Sampler {
 
-    private final double rate;
+    private final double scaler;
 
     private final double threshold;
 
     private final SessionProvider sessionProvider;
 
-    public SessionIdBasedSampler(double rate, SessionProvider sessionProvider) {
-        this.rate = rate;
+    public SessionIdBasedSampler(double scaler, SessionProvider sessionProvider) {
+        this.scaler = scaler;
         this.sessionProvider = sessionProvider;
-        this.threshold = rate * Long.MAX_VALUE;
+        this.threshold = scaler * Long.MAX_VALUE;
     }
 
     @Override
@@ -54,8 +54,8 @@ public class SessionIdBasedSampler implements Sampler {
     public String getDescription() {
         return String.format(
                 Locale.getDefault(),
-                "SessionIdBasedSampler{rate=%f, threshold=%f}",
-                rate,
+                "SessionIdBasedSampler{scaler=%f, threshold=%f}",
+                scaler,
                 threshold);
     }
 
