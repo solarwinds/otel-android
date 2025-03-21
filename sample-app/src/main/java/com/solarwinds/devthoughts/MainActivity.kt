@@ -100,10 +100,8 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        thoughtCounter = this.solarwindsRum().openTelemetryRum
-            .openTelemetry
-            .meterProvider
-            .get(this.meterProviderName)
+        thoughtCounter = this.solarwindsRum()
+            .meter(this.meterProviderName)
             .counterBuilder("thought.count")
             .build()
     }

@@ -87,7 +87,7 @@ public class SolarwindsRumBuilder {
                 .addLogRecordExporterCustomizer(this::createLogExporter)
                 .mergeResource(SolarwindsResourceProvider.create());
 
-        return new SolarwindsRum(builder.build());
+        return SolarwindsRum.initialize(builder.build());
     }
 
     private OtlpGrpcSpanExporter createSpanExporter(SpanExporter spanExporter) {

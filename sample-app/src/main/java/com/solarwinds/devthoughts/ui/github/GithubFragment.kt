@@ -59,8 +59,7 @@ class GithubFragment : Fragment() {
     override fun onAttach(context: Context) {
         super.onAttach(context)
         val solarwindsRum = context.solarwindsRum()
-        githubActivityGauge = solarwindsRum.openTelemetryRum.openTelemetry.meterProvider
-            .get(context.meterProviderName)
+        githubActivityGauge = solarwindsRum.meter(context.meterProviderName)
             .gaugeBuilder("github.events")
             .ofLongs()
             .build()

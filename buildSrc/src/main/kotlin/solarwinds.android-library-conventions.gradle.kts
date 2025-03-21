@@ -12,6 +12,11 @@ val swoRumVersion: String by rootProject.extra
 android {
     compileSdk = 35
 
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+
     lint {
         warningsAsErrors = true
     }

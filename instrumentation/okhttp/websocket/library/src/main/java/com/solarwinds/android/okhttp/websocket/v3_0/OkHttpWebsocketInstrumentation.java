@@ -27,4 +27,10 @@ public class OkHttpWebsocketInstrumentation implements AndroidInstrumentation {
     public void install(@NonNull InstallationContext ctx) {
         WebsocketEventGenerator.configure(ctx.getOpenTelemetry());
     }
+
+    @NonNull
+    @Override
+    public String getName() {
+        return "sw-okhttp-websocket";
+    }
 }
