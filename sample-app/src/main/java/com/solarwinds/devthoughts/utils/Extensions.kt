@@ -20,11 +20,11 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
-import com.solarwinds.devthoughts.DevThoughtsApplication
+import com.solarwinds.android.SolarwindsRum
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
-fun Context.solarwindsRum() = DevThoughtsApplication.solarwindsRum
+fun Context.solarwindsRum() = SolarwindsRum.instance
 
 val Context.meterProviderName: String
     get() = "com.solarwinds.dev.thoughts"

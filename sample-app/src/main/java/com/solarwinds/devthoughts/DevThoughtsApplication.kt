@@ -17,15 +17,11 @@ import kotlinx.coroutines.runBlocking
 import java.util.concurrent.TimeUnit
 
 class DevThoughtsApplication : Application() {
-    companion object {
-        lateinit var solarwindsRum: SolarwindsRum
-    }
-
     override fun onCreate() {
         super.onCreate()
         val collectorUrl = resources.getString(R.string.collector_url)
         val apiToken = resources.getString(R.string.api_token)
-        solarwindsRum = SolarwindsRumBuilder()
+        SolarwindsRumBuilder()
             .collectorUrl(collectorUrl)
             .sessionProvider(object : SessionProvider {
                 override fun getSessionId(): String {
