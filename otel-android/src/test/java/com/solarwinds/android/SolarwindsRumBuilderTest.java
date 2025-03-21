@@ -1,6 +1,5 @@
 package com.solarwinds.android;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 import android.app.Application;
@@ -29,23 +28,6 @@ public class SolarwindsRumBuilderTest {
     @After
     public void tearDown() throws Exception {
         mocks.close();
-    }
-
-    @Test
-    public void verifyAttributesSupplierIsNotModifiedWhenSessionProviderIsNull() {
-        SolarwindsRumBuilder solarwindsRumBuilder = new SolarwindsRumBuilder();
-        OtelRumConfig otelRumConfig = new OtelRumConfig();
-        otelRumConfig
-                .setGlobalAttributes(Attributes.of(AttributeKey.stringKey("attr"), "value"))
-                .disableNetworkAttributes()
-                .disableInstrumentationDiscovery();
-
-        solarwindsRumBuilder
-                .otelRumConfig(otelRumConfig)
-                .apiToken("token")
-                .collectorUrl("http://localhost")
-                .build(application);
-        assertFalse(otelRumConfig.getGlobalAttributesSupplier() instanceof SessionIdAppender);
     }
 
     @Test

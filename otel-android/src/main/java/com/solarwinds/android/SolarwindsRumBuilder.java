@@ -20,6 +20,7 @@ import android.app.Application;
 import io.opentelemetry.android.OpenTelemetryRum;
 import io.opentelemetry.android.OpenTelemetryRumBuilder;
 import io.opentelemetry.android.config.OtelRumConfig;
+import io.opentelemetry.android.session.SessionIdGenerator;
 import io.opentelemetry.android.session.SessionProvider;
 import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.api.common.Attributes;
@@ -29,6 +30,7 @@ import io.opentelemetry.exporter.otlp.trace.OtlpGrpcSpanExporter;
 import io.opentelemetry.sdk.logs.export.LogRecordExporter;
 import io.opentelemetry.sdk.metrics.SdkMeterProviderBuilder;
 import io.opentelemetry.sdk.metrics.export.PeriodicMetricReader;
+import io.opentelemetry.sdk.trace.SdkTracerProviderBuilder;
 import io.opentelemetry.sdk.trace.export.SpanExporter;
 import java.util.function.Supplier;
 
@@ -41,9 +43,14 @@ public class SolarwindsRumBuilder {
 
     private OtelRumConfig otelRumConfig = new OtelRumConfig();
 
-    private SessionProvider sessionProvider = null;
+    private static final SessionProvider DEFAULT_PROVIDER =
+            SessionIdGenerator.DEFAULT.INSTANCE::generateSessionId;
+
+    private SessionProvider sessionProvider = DEFAULT_PROVIDER;
 
     private String sessionIdKey = "session.id";
+
+    private double scaleRatio = 0.5;
 
     public SolarwindsRumBuilder collectorUrl(String collectorUrl) {
         this.collectorUrl = collectorUrl;
@@ -70,24 +77,33 @@ public class SolarwindsRumBuilder {
         return this;
     }
 
+    public SolarwindsRumBuilder scaleRatio(double scaleRatio) {
+        this.scaleRatio = scaleRatio;
+        return this;
+    }
+
     public SolarwindsRum build(Application application) {
-        if (sessionProvider != null) {
-            Supplier<Attributes> globalAttributesSupplier =
-                    otelRumConfig.getGlobalAttributesSupplier();
-            otelRumConfig.setGlobalAttributes(
-                    new SessionIdAppender(
-                            globalAttributesSupplier,
-                            AttributeKey.stringKey(sessionIdKey),
-                            sessionProvider));
-        }
+        Supplier<Attributes> globalAttributesSupplier = otelRumConfig.getGlobalAttributesSupplier();
+        otelRumConfig.setGlobalAttributes(
+                new SessionIdAppender(
+                        globalAttributesSupplier,
+                        AttributeKey.stringKey(sessionIdKey),
+                        sessionProvider));
 
         OpenTelemetryRumBuilder builder = OpenTelemetryRum.builder(application, otelRumConfig);
-        builder.addSpanExporterCustomizer(this::createSpanExporter)
-                .addMeterProviderCustomizer(this::customizeMetricProvider)
+        builder.mergeResource(SolarwindsResourceProvider.create())
+                .addSpanExporterCustomizer(this::createSpanExporter)
                 .addLogRecordExporterCustomizer(this::createLogExporter)
-                .mergeResource(SolarwindsResourceProvider.create());
+                .addMeterProviderCustomizer(this::customizeMetricProvider)
+                .addTracerProviderCustomizer(this::customizeTracerProvider);
 
         return new SolarwindsRum(builder.build());
+    }
+
+    private SdkTracerProviderBuilder customizeTracerProvider(
+            SdkTracerProviderBuilder sdkTracerProviderBuilder, Application application) {
+        return sdkTracerProviderBuilder.setSampler(
+                new SessionIdBasedSampler(scaleRatio, sessionProvider));
     }
 
     private OtlpGrpcSpanExporter createSpanExporter(SpanExporter spanExporter) {
