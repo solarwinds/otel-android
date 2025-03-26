@@ -97,7 +97,7 @@ public class SolarwindsRumBuilder {
                 .addMeterProviderCustomizer(this::customizeMetricProvider)
                 .addTracerProviderCustomizer(this::customizeTracerProvider);
 
-        return new SolarwindsRum(builder.build());
+        return SolarwindsRum.initialize(builder.build());
     }
 
     private SdkTracerProviderBuilder customizeTracerProvider(
