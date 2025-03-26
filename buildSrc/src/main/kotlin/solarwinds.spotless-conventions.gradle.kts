@@ -8,15 +8,21 @@ spotless {
     java {
         googleJavaFormat().aosp()
         target("src/**/*.java")
+        licenseHeaderFile(rootProject.file("gradle/spotless.license.java"), "(package|import|public)")
     }
+
     plugins.withId("org.jetbrains.kotlin.jvm") {
-        kotlin {
-            ktlint()
-        }
+        configureKotlin(this@spotless)
     }
+
+    plugins.withId("org.jetbrains.kotlin.android") {
+        configureKotlin(this@spotless)
+    }
+
     kotlinGradle {
         ktlint()
     }
+
     format("misc") {
         // not using "**/..." to help keep spotless fast
         target(
@@ -52,5 +58,17 @@ if (project == rootProject) {
         kotlinGradle {
             ktlint()
         }
+    }
+}
+
+fun configureKotlin(
+    spotlessExtension: SpotlessExtension,
+) {
+    spotlessExtension.kotlin {
+        licenseHeaderFile(
+            rootProject.file("gradle/spotless.license.java"),
+            "(package|import|public)"
+        )
+        target("src/**/*.kt")
     }
 }

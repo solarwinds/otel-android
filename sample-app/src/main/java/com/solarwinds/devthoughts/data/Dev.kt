@@ -25,5 +25,5 @@ data class Dev(
     @PrimaryKey(autoGenerate = true) val devId: Int,
     @ColumnInfo(name = "username") val username: String?,
     @ColumnInfo(name = "favorite_ide") val favoriteIde: String?,
-    @ColumnInfo(name = "favorite_lang") val favoriteLang: String?
+    @ColumnInfo(name = "favorite_lang") val favoriteLang: String?,
 )
