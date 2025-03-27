@@ -15,6 +15,7 @@
  */
 
 plugins {
+    id("solarwinds.publish-conventions")
     id("solarwinds.android-library-conventions")
 }
 

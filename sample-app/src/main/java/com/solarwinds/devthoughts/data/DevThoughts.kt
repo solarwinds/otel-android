@@ -22,5 +22,5 @@ import androidx.room.Relation
 data class DevThoughts(
     @Embedded val dev: Dev,
     @Relation(parentColumn = "devId", entityColumn = "devId")
-    val thoughts: List<Thought>
+    val thoughts: List<Thought>,
 )

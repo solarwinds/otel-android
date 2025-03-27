@@ -23,5 +23,5 @@ import androidx.room.PrimaryKey
 data class Thought(
     @PrimaryKey(autoGenerate = true) val thoughtId: Int,
     val devId: Int,
-    val body: String
+    val body: String,
 )

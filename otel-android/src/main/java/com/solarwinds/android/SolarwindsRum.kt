@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.solarwinds.android
 
 import io.opentelemetry.android.OpenTelemetryRum
@@ -24,8 +25,9 @@ import io.opentelemetry.api.metrics.Meter
  * SolarwindsRum provides an interface for generating OTel telemetry.
  * This class is a singleton and should be initialized using {@link SolarwindsRumBuilder}.
  */
-class SolarwindsRum private constructor(private val openTelemetryRum: OpenTelemetryRum) {
-
+class SolarwindsRum private constructor(
+    private val openTelemetryRum: OpenTelemetryRum,
+) {
     private val logger: ExtendedLogger =
         openTelemetryRum.openTelemetry.logsBridge
             .loggerBuilder("com.solarwinds.android.rum.logs")
@@ -39,8 +41,13 @@ class SolarwindsRum private constructor(private val openTelemetryRum: OpenTeleme
      * @param attributes Additional attributes for the log event. Defaults to an empty set if not provided.
      */
     @JvmOverloads
-    fun emitEvent(name: String, body: String = "", attributes: Attributes = Attributes.empty()) {
-        logger.logRecordBuilder()
+    fun emitEvent(
+        name: String,
+        body: String = "",
+        attributes: Attributes = Attributes.empty(),
+    ) {
+        logger
+            .logRecordBuilder()
             .setEventName(name)
             .setBody(body)
             .setAllAttributes(attributes)
@@ -53,9 +60,7 @@ class SolarwindsRum private constructor(private val openTelemetryRum: OpenTeleme
      * @param scope The name of the meter scope.
      * @return A {@link Meter} instance for collecting metrics.
      */
-    fun meter(scope: String): Meter {
-        return openTelemetryRum.openTelemetry.getMeter(scope)
-    }
+    fun meter(scope: String): Meter = openTelemetryRum.openTelemetry.getMeter(scope)
 
     /**
      * Companion object that holds the singleton instance of {@link SolarwindsRum}.
