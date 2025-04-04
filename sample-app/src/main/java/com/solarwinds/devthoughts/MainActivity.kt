@@ -1,3 +1,19 @@
+/*
+ * © SolarWinds Worldwide, LLC. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.solarwinds.devthoughts
 
 import android.os.Bundle
@@ -7,16 +23,16 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
-import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.navigation.NavigationView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import androidx.drawerlayout.widget.DrawerLayout
-import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.lifecycleScope
+import com.google.android.material.navigation.NavigationView
+import com.google.android.material.snackbar.Snackbar
 import com.solarwinds.devthoughts.data.AppViewModel
 import com.solarwinds.devthoughts.data.Dev
 import com.solarwinds.devthoughts.data.DevThoughtsDatabase
@@ -34,9 +50,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
-
 class MainActivity : AppCompatActivity() {
-
     private lateinit var appBarConfiguration: AppBarConfiguration
 
     private lateinit var binding: ActivityMainBinding
@@ -66,11 +80,15 @@ class MainActivity : AppCompatActivity() {
         val navController = findNavController(R.id.nav_host_fragment_content_main)
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
-        appBarConfiguration = AppBarConfiguration(
-            setOf(
-                R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow
-            ), drawerLayout
-        )
+        appBarConfiguration =
+            AppBarConfiguration(
+                setOf(
+                    R.id.nav_home,
+                    R.id.nav_gallery,
+                    R.id.nav_slideshow,
+                ),
+                drawerLayout,
+            )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
 
@@ -93,17 +111,20 @@ class MainActivity : AppCompatActivity() {
         }
 
         lifecycleScope.launch {
-            dataStore.data.map { settings ->
-                settings[sessionIdPreferenceKey] ?: "unset"
-            }.collectLatest {
-                sessionId = it
-            }
+            dataStore.data
+                .map { settings ->
+                    settings[sessionIdPreferenceKey] ?: "unset"
+                }.collectLatest {
+                    sessionId = it
+                }
         }
 
-        thoughtCounter = this.solarwindsRum()
-            .meter(this.meterProviderName)
-            .counterBuilder("thought.count")
-            .build()
+        thoughtCounter =
+            this
+                .solarwindsRum()
+                .meter(this.meterProviderName)
+                .counterBuilder("thought.count")
+                .build()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -119,7 +140,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun showInputDialog(view: View) {
         val editText = EditText(this)
-        AlertDialog.Builder(this)
+        AlertDialog
+            .Builder(this)
             .setTitle("What's on your mind?")
             .setView(editText)
             .setCancelable(true)
@@ -129,26 +151,28 @@ class MainActivity : AppCompatActivity() {
                 if (dev != null) {
                     repository.writeThought(Thought(0, dev!!.devId, thought))
                     thoughtCounter.add(
-                        1, Attributes.of(
-                            AttributeKey.stringKey("username"), dev!!.username!!,
-                            AttributeKey.stringKey("session.id"), sessionId,
-                        )
+                        1,
+                        Attributes.of(
+                            AttributeKey.stringKey("username"),
+                            dev!!.username!!,
+                            AttributeKey.stringKey("session.id"),
+                            sessionId,
+                        ),
                     )
                 } else {
                     msg = "Your thought has not been registered"
                 }
 
                 dialog.cancel()
-                Snackbar.make(
-                    view,
-                    msg,
-                    Snackbar.LENGTH_LONG
-                ).setAnchorView(R.id.fab)
+                Snackbar
+                    .make(
+                        view,
+                        msg,
+                        Snackbar.LENGTH_LONG,
+                    ).setAnchorView(R.id.fab)
                     .show()
-            }
-            .setNegativeButton("Cancel") { dialog, _ ->
+            }.setNegativeButton("Cancel") { dialog, _ ->
                 dialog.dismiss()
-            }
-            .show()
+            }.show()
     }
 }

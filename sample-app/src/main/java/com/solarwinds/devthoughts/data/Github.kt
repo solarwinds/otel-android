@@ -21,10 +21,10 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class GitHubEvent(
     val type: String,
-    val repo: GitRepository
+    val repo: GitRepository,
 )
 
 @Serializable
 data class GitRepository(
-    val name: String
+    val name: String,
 )

@@ -81,11 +81,12 @@ class OnboardingActivity : ComponentActivity() {
             AppTheme {
                 if (loading) {
                     LaunchedEffect(onBoardingPreferenceKey) {
-                        applicationContext.dataStore.data.map { settings ->
-                            settings[onBoardingPreferenceKey] ?: false
-                        }.collectLatest {
-                            loading = false
-                        }
+                        applicationContext.dataStore.data
+                            .map { settings ->
+                                settings[onBoardingPreferenceKey] ?: false
+                            }.collectLatest {
+                                loading = false
+                            }
                     }
                     Loading()
                 } else {
@@ -107,19 +108,19 @@ class OnboardingActivity : ComponentActivity() {
                             startActivity(Intent(this@OnboardingActivity, MainActivity::class.java))
                             finish()
                         }
-
                     } else {
                         Scaffold(
                             modifier = Modifier.fillMaxSize(),
                             topBar = {
                                 TopAppBar(
-                                    colors = TopAppBarDefaults.topAppBarColors(
-                                        containerColor = MaterialTheme.colorScheme.primaryContainer,
-                                        titleContentColor = MaterialTheme.colorScheme.primary,
-                                    ),
+                                    colors =
+                                        TopAppBarDefaults.topAppBarColors(
+                                            containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                            titleContentColor = MaterialTheme.colorScheme.primary,
+                                        ),
                                     title = {
                                         Text(getString(R.string.app_name))
-                                    }
+                                    },
                                 )
                             },
                         ) { innerPadding ->
@@ -130,9 +131,10 @@ class OnboardingActivity : ComponentActivity() {
                             NavHost(
                                 navController = navController,
                                 startDestination = UsernameRoute,
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(innerPadding)
+                                modifier =
+                                    Modifier
+                                        .fillMaxSize()
+                                        .padding(innerPadding),
                             ) {
                                 composable<UsernameRoute> {
                                     Username(viewmodel, navigation)

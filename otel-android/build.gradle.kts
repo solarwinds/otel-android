@@ -15,8 +15,8 @@
  */
 
 plugins {
+    id("solarwinds.publish-conventions")
     id("solarwinds.android-library-conventions")
-    alias(libs.plugins.kotlin.android)
 }
 
 android {

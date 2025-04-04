@@ -3,8 +3,8 @@ import java.util.Properties
 
 plugins {
     id("com.android.application")
+    id("org.jetbrains.kotlin.android")
     id("net.bytebuddy.byte-buddy-gradle-plugin")
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.ksp)
     kotlin("plugin.serialization") version "2.0.21"
@@ -64,7 +64,11 @@ dependencies {
     implementation(project(":otel-android"))
     byteBuddy(project(":instrumentation:okhttp:websocket:agent"))
     implementation(project(":instrumentation:okhttp:websocket:library"))
+
+    byteBuddy(project(":instrumentation:android-log:agent"))
+    implementation(project(":instrumentation:android-log:library"))
     implementation(libs.androidx.datastore.preferences)
+
     implementation(libs.androidx.fragment.compose)
     implementation(libs.otel.android.okhttp.lib)
     byteBuddy(libs.otel.android.okhttp.agent)
@@ -72,25 +76,31 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.work.manager)
+
     implementation(libs.androidx.room)
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
+
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.constraintlayout)
+
     implementation(libs.androidx.lifecycle.livedata.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.navigation.fragment.ktx)
+
     implementation(libs.androidx.navigation.ui.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.material3)
+
     implementation(libs.androidx.ui.tooling)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.kotlin.serialization)
+
     implementation(libs.androidx.navigation.compose)
     implementation(platform(libs.androidx.compose.bom))
-
     coreLibraryDesugaring(libs.desugarJdkLibs)
+
     testImplementation(libs.junit.junit4)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

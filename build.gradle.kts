@@ -24,7 +24,6 @@ buildscript {
 
 plugins {
     alias(libs.plugins.publishPlugin)
-    alias(libs.plugins.kotlin.android) apply false
 }
 
 

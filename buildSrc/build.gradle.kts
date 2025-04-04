@@ -19,4 +19,5 @@ repositories {
 dependencies {
     implementation(libs.android.plugin)
     implementation(libs.spotless.plugin)
+    implementation(libs.kotlin.plugin)
 }
