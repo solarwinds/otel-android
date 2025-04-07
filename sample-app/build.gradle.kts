@@ -67,6 +67,8 @@ dependencies {
 
     byteBuddy(project(":instrumentation:android-log:agent"))
     implementation(project(":instrumentation:android-log:library"))
+    byteBuddy(project(":instrumentation:view:agent"))
+    implementation(project(":instrumentation:view:library"))
     implementation(libs.androidx.datastore.preferences)
 
     implementation(libs.androidx.fragment.compose)
