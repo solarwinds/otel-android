@@ -67,12 +67,13 @@ dependencies {
 
     byteBuddy(project(":instrumentation:android-log:agent"))
     implementation(project(":instrumentation:android-log:library"))
-    byteBuddy(project(":instrumentation:view:agent"))
-    implementation(project(":instrumentation:view:library"))
+    implementation(project(":instrumentation:view-click"))
     implementation(libs.androidx.datastore.preferences)
 
     implementation(libs.androidx.fragment.compose)
-    implementation(libs.otel.android.okhttp.lib)
+    implementation(libs.otel.android.okhttp.lib) {
+        exclude(module = "instrumentation-android-instrumentation")
+    }
     byteBuddy(libs.otel.android.okhttp.agent)
 
     implementation(libs.okhttp)

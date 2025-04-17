@@ -10,6 +10,5 @@ android {
 dependencies {
     byteBuddy(project(":instrumentation:view:agent"))
     implementation(project(":instrumentation:view:library"))
-    implementation(project(":test-common"))
-    androidTestImplementation(libs.assertj.core)
+    androidTestImplementation(project(":test-common"))
 }
