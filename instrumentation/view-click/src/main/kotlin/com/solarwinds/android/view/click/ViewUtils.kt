@@ -15,19 +15,16 @@
  */
 
 package com.solarwinds.android.view.click
-import android.view.View
 import io.opentelemetry.api.common.AttributeKey
 import io.opentelemetry.api.common.AttributeKey.doubleKey
 import io.opentelemetry.api.common.AttributeKey.longKey
 import io.opentelemetry.api.common.AttributeKey.stringKey
 
-const val appScreenClickEventName = "app.screen.click"
-const val viewClickEventName = "event.app.widget.click"
+const val APP_SCREEN_CLICK_EVENT_NAME = "app.screen.click"
+const val VIEW_CLICK_EVENT_NAME = "event.app.widget.click"
 val viewNameAttr: AttributeKey<String> = stringKey("app.widget.name")
 
 val xCoordinateAttr: AttributeKey<Double> = doubleKey("app.screen.coordinate.x")
 val yCoordinateAttr: AttributeKey<Double> = doubleKey("app.screen.coordinate.y")
 val viewIdAttr: AttributeKey<Long> = longKey("app.widget.id")
 
-internal val View.isVisible: Boolean
-    get() = visibility == View.VISIBLE

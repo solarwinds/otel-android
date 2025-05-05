@@ -20,7 +20,7 @@ import android.app.Activity
 import android.app.Application.ActivityLifecycleCallbacks
 import android.os.Bundle
 
-class ViewClickActivityCallback : ActivityLifecycleCallbacks {
+class ViewClickActivityCallback(private val viewClickEventGenerator: ViewClickEventGenerator) : ActivityLifecycleCallbacks {
     override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
         
     }
@@ -30,11 +30,11 @@ class ViewClickActivityCallback : ActivityLifecycleCallbacks {
     }
 
     override fun onActivityResumed(activity: Activity) {
-        ViewClickEventGenerator.startTracking(activity.window)
+        viewClickEventGenerator.startTracking(activity.window)
     }
 
     override fun onActivityPaused(activity: Activity) {
-        ViewClickEventGenerator.stopTracking()
+        viewClickEventGenerator.stopTracking()
     }
 
     override fun onActivityStopped(activity: Activity) {

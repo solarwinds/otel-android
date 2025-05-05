@@ -15,14 +15,20 @@
  */
 
 package com.solarwinds.android.view.click
+
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
+import io.opentelemetry.api.common.Attributes
+import io.opentelemetry.api.incubator.logs.ExtendedLogRecordBuilder
+import io.opentelemetry.api.incubator.logs.ExtendedLogger
 import java.lang.ref.WeakReference
 import java.util.LinkedList
 
-internal object ViewClickEventGenerator {
+class ViewClickEventGenerator(
+    private val eventLogger: ExtendedLogger,
+) {
     private var windowRef: WeakReference<Window>? = null
 
     private val viewCoordinates = IntArray(2)
@@ -30,22 +36,20 @@ internal object ViewClickEventGenerator {
     fun startTracking(window: Window) {
         windowRef = WeakReference(window)
         val currentCallback = window.callback
-        val newCallback = WindowCallbackWrapper(currentCallback)
-
-        window.callback = newCallback
+        window.callback = WindowCallbackWrapper(currentCallback, this)
     }
 
     fun generateClick(motionEvent: MotionEvent?) {
         windowRef?.get()?.let { window ->
             if (motionEvent != null && motionEvent.actionMasked == MotionEvent.ACTION_UP) {
-                EventBuilderCreator.createEvent(appScreenClickEventName)
+                createEvent(APP_SCREEN_CLICK_EVENT_NAME)
                     .setAttribute(yCoordinateAttr, motionEvent.y.toDouble())
                     .setAttribute(xCoordinateAttr, motionEvent.x.toDouble())
                     .emit()
 
                 findTargetForTap(window.decorView, motionEvent.x, motionEvent.y)?.let { view ->
-                    EventBuilderCreator.createEvent(viewClickEventName)
-                        .setAllAttributes(EventBuilderCreator.createViewAttributes(view))
+                    createEvent(VIEW_CLICK_EVENT_NAME)
+                        .setAllAttributes(createViewAttributes(view))
                         .emit()
                 }
             }
@@ -60,6 +64,28 @@ internal object ViewClickEventGenerator {
         }
         windowRef = null
     }
+
+    private fun createEvent(name: String): ExtendedLogRecordBuilder =
+        eventLogger
+            .logRecordBuilder()
+            .setEventName(name)
+
+    private fun createViewAttributes(view: View): Attributes {
+        val builder = Attributes.builder()
+        builder.put(viewNameAttr, viewToName(view))
+        builder.put(viewIdAttr, view.id.toLong())
+
+        builder.put(xCoordinateAttr, view.x.toDouble())
+        builder.put(yCoordinateAttr, view.y.toDouble())
+        return builder.build()
+    }
+
+    private fun viewToName(view: View): String =
+        try {
+            view.resources?.getResourceEntryName(view.id) ?: view.id.toString()
+        } catch (throwable: Throwable) {
+            view.id.toString()
+        }
 
     private fun findTargetForTap(
         decorView: View,
@@ -120,4 +146,7 @@ internal object ViewClickEventGenerator {
     }
 
     private fun isJetpackComposeView(view: View): Boolean = view::class.java.name.startsWith("androidx.compose.ui.platform.ComposeView")
+
+    private val View.isVisible: Boolean
+        get() = visibility == View.VISIBLE
 }

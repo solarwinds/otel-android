@@ -114,7 +114,7 @@ class ViewClickInstrumentationTest {
 
         var event = events[0] as ExtendedLogRecordData
         assertThat(event)
-            .hasEventName(appScreenClickEventName)
+            .hasEventName(APP_SCREEN_CLICK_EVENT_NAME)
             .hasAttributesSatisfyingExactly(
                 equalTo(xCoordinateAttr, motionEvent.x.toDouble()),
                 equalTo(yCoordinateAttr, motionEvent.y.toDouble()),
@@ -122,12 +122,12 @@ class ViewClickInstrumentationTest {
 
         event = events[1] as ExtendedLogRecordData
         assertThat(event)
-            .hasEventName(viewClickEventName)
+            .hasEventName(VIEW_CLICK_EVENT_NAME)
             .hasAttributesSatisfyingExactly(
                 equalTo(xCoordinateAttr, mockView.x.toDouble()),
                 equalTo(yCoordinateAttr, mockView.y.toDouble()),
                 equalTo(viewIdAttr, mockView.id),
-                equalTo(viewNameAttr, EventBuilderCreator.viewToName(mockView)),
+                equalTo(viewNameAttr, "10012"),
             )
     }
 
@@ -180,7 +180,7 @@ class ViewClickInstrumentationTest {
 
         var event = events[0] as ExtendedLogRecordData
         assertThat(event)
-            .hasEventName(appScreenClickEventName)
+            .hasEventName(APP_SCREEN_CLICK_EVENT_NAME)
             .hasAttributesSatisfyingExactly(
                 equalTo(xCoordinateAttr, motionEvent.x.toDouble()),
                 equalTo(yCoordinateAttr, motionEvent.y.toDouble()),
@@ -188,12 +188,12 @@ class ViewClickInstrumentationTest {
 
         event = events[1] as ExtendedLogRecordData
         assertThat(event)
-            .hasEventName(viewClickEventName)
+            .hasEventName(VIEW_CLICK_EVENT_NAME)
             .hasAttributesSatisfyingExactly(
                 equalTo(xCoordinateAttr, mockView.x.toDouble()),
                 equalTo(yCoordinateAttr, mockView.y.toDouble()),
                 equalTo(viewIdAttr, mockView.id),
-                equalTo(viewNameAttr, EventBuilderCreator.viewToName(mockView)),
+                equalTo(viewNameAttr, "10012"),
             )
     }
 
@@ -247,7 +247,7 @@ class ViewClickInstrumentationTest {
 
         val event = events[0] as ExtendedLogRecordData
         assertThat(event)
-            .hasEventName(appScreenClickEventName)
+            .hasEventName(APP_SCREEN_CLICK_EVENT_NAME)
             .hasAttributesSatisfyingExactly(
                 equalTo(xCoordinateAttr, motionEvent.x.toDouble()),
                 equalTo(yCoordinateAttr, motionEvent.y.toDouble()),

@@ -21,10 +21,11 @@ import android.view.Window.Callback
 
 class WindowCallbackWrapper(
     private val callback: Callback,
+    private val viewClickEventGenerator: ViewClickEventGenerator
 ) : Callback by callback {
 
     override fun dispatchTouchEvent(event: MotionEvent?): Boolean {
-        ViewClickEventGenerator.generateClick(event)
+        viewClickEventGenerator.generateClick(event)
         return callback.dispatchTouchEvent(event)
     }
 

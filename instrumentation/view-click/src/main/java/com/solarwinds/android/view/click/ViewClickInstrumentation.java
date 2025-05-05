@@ -20,15 +20,24 @@ import androidx.annotation.NonNull;
 import com.google.auto.service.AutoService;
 import io.opentelemetry.android.instrumentation.AndroidInstrumentation;
 import io.opentelemetry.android.instrumentation.InstallationContext;
+import io.opentelemetry.api.incubator.logs.ExtendedLogger;
 
 @AutoService(AndroidInstrumentation.class)
 public class ViewClickInstrumentation implements AndroidInstrumentation {
-    public static final String INSTRUMENTATION_NAME = "android.view.click";
+    public static final String INSTRUMENTATION_NAME = "view.click";
 
     @Override
     public void install(@NonNull InstallationContext ctx) {
-        ctx.getApplication().registerActivityLifecycleCallbacks(new ViewClickActivityCallback());
-        EventBuilderCreator.configure(ctx);
+        ExtendedLogger logger =
+                (ExtendedLogger)
+                        ctx.getOpenTelemetry()
+                                .getLogsBridge()
+                                .loggerBuilder(
+                                        "io.opentelemetry.android.instrumentation.view.click")
+                                .build();
+        ctx.getApplication()
+                .registerActivityLifecycleCallbacks(
+                        new ViewClickActivityCallback(new ViewClickEventGenerator(logger)));
     }
 
     @NonNull
