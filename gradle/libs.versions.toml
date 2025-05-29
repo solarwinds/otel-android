@@ -21,7 +21,7 @@ activity-compose = "1.10.1"
 compose-bom = "2025.02.00"
 opentelemetry-sdk = "1.47.0"
 opentelemetry-inst = "2.13.1"
-opentelemetry-android = "0.11.0-alpha-SNAPSHOT"
+opentelemetry-android = "0.11.0-alpha"
 opentelemetry-instrumentation-alpha = "2.13.1-alpha"
 mockito = "5.15.2"
 robocop = "4.14.1"
@@ -71,8 +71,8 @@ opentelemetry-sdk-testing = { module = "io.opentelemetry:opentelemetry-sdk-testi
 opentelemetry-sdk = { module = "io.opentelemetry:opentelemetry-sdk" }
 opentelemetry-instrumentation-apiSemconv = { module = "io.opentelemetry.instrumentation:opentelemetry-instrumentation-api-incubator", version.ref = "opentelemetry-instrumentation-alpha" }
 okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
-otel-android-okhttp-lib = { module = "io.opentelemetry.android:instrumentation-okhttp-3.0-library", version.ref = "opentelemetry-android" }
-otel-android-okhttp-agent = { module = "io.opentelemetry.android:instrumentation-okhttp-3.0-agent", version.ref = "opentelemetry-android" }
+otel-android-okhttp-lib = { module = "io.opentelemetry.android.instrumentation:okhttp3-library", version.ref = "opentelemetry-android" }
+otel-android-okhttp-agent = { module = "io.opentelemetry.android.instrumentation:okhttp3-agent", version.ref = "opentelemetry-android" }
 byteBuddy = { module = "net.bytebuddy:byte-buddy", version.ref = "byteBuddy" }
 byteBuddy-plugin = { module = "net.bytebuddy:byte-buddy-gradle-plugin", version.ref = "byteBuddy" }
 

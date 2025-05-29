@@ -30,6 +30,8 @@ android {
 val mockitoAgent = configurations.create("mockitoAgent")
 dependencies {
     api(platform(libs.opentelemetry.bom))
+    api(platform(libs.opentelemetry.instrumentation.bom))
+
     api(libs.opentelemetry.android)
     api(libs.opentelemetry.android.session)
 
