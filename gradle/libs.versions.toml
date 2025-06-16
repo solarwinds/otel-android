@@ -75,6 +75,8 @@ otel-android-okhttp-lib = { module = "io.opentelemetry.android.instrumentation:o
 otel-android-okhttp-agent = { module = "io.opentelemetry.android.instrumentation:okhttp3-agent", version.ref = "opentelemetry-android" }
 otel-android-okhttp-websocket-agent = { module = "io.opentelemetry.android.instrumentation:okhttp3-websocket-agent", version.ref = "opentelemetry-android" }
 otel-android-okhttp-websocket-lib = { module = "io.opentelemetry.android.instrumentation:okhttp3-websocket-library", version.ref = "opentelemetry-android" }
+otel-android-log-lib = { module = "io.opentelemetry.android.instrumentation:android-log-library", version.ref = "opentelemetry-android" }
+otel-android-log-agent = { module = "io.opentelemetry.android.instrumentation:android-log-agent", version.ref = "opentelemetry-android" }
 byteBuddy = { module = "net.bytebuddy:byte-buddy", version.ref = "byteBuddy" }
 byteBuddy-plugin = { module = "net.bytebuddy:byte-buddy-gradle-plugin", version.ref = "byteBuddy" }
 
