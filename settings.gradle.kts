@@ -44,8 +44,6 @@ rootProject.name = "solarwinds-otel-android"
 include(":otel-android")
 include(":sample-app")
 include(":test-common")
-include(":instrumentation:okhttp:websocket:agent")
-include(":instrumentation:okhttp:websocket:library")
 include(":instrumentation:android-log:library")
 include(":instrumentation:android-log:agent")
 include(":instrumentation:android-log:testing")

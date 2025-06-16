@@ -62,19 +62,20 @@ android {
 
 dependencies {
     implementation(project(":otel-android"))
-    byteBuddy(project(":instrumentation:okhttp:websocket:agent"))
-    implementation(project(":instrumentation:okhttp:websocket:library"))
 
     byteBuddy(project(":instrumentation:android-log:agent"))
     implementation(project(":instrumentation:android-log:library"))
     implementation(project(":instrumentation:view-click"))
+
+    implementation(libs.opentelemetry.android)
     implementation(libs.androidx.datastore.preferences)
 
     implementation(libs.androidx.fragment.compose)
-    implementation(libs.otel.android.okhttp.lib) {
-        exclude(module = "instrumentation-android-instrumentation")
-    }
+    implementation(libs.otel.android.okhttp.lib)
     byteBuddy(libs.otel.android.okhttp.agent)
+
+    implementation(libs.otel.android.okhttp.websocket.lib)
+    byteBuddy(libs.otel.android.okhttp.websocket.agent)
 
     implementation(libs.okhttp)
     implementation(libs.androidx.core.ktx)
