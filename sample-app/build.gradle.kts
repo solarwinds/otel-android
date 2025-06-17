@@ -62,10 +62,8 @@ android {
 
 dependencies {
     implementation(project(":otel-android"))
-
-    byteBuddy(project(":instrumentation:android-log:agent"))
-    implementation(project(":instrumentation:android-log:library"))
-    implementation(project(":instrumentation:view-click"))
+    byteBuddy(libs.otel.android.log.agent)
+    implementation(libs.otel.android.log.lib)
 
     implementation(libs.opentelemetry.android)
     implementation(libs.androidx.datastore.preferences)
