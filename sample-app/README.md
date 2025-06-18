@@ -19,4 +19,4 @@ going to explain which actions trigger telemetry generation.
   API request is made when user enters the Github screen. Spans are also generated when you cause an ANR
   - Trigger an ANR: long press on any of you thoughts in the Thought screen.
 - Logs
-  - No logs yet. Although, events are exported as logs.
+  - All `android.util.Log.*` is exported as otlp logs.
