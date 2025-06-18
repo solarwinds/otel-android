@@ -27,7 +27,7 @@ plugins {
 }
 
 
-val swoRumVersion = "0.0.1"
+val swoRumVersion = "0.1.0"
 extra["swoRumVersion"] = swoRumVersion
 
 group = "io.github.appoptics"
