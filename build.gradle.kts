@@ -30,7 +30,7 @@ plugins {
 val swoRumVersion = "0.1.0"
 extra["swoRumVersion"] = swoRumVersion
 
-group = "io.github.appoptics"
+group = "com.solarwinds"
 val versionSuffix: String? = System.getenv("SW_RUM_VERSION_SUFFIX")
 version = if (versionSuffix != null) "$swoRumVersion-$versionSuffix" else swoRumVersion
 

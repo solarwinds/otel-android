@@ -39,7 +39,7 @@ val versionSuffix: String? = System.getenv("SW_RUM_VERSION_SUFFIX")
 publishing {
     publications {
         create<MavenPublication>("maven") {
-            groupId = "io.github.appoptics"
+            groupId = "com.solarwinds"
             artifactId = computeArtifactId()
             version =  if(versionSuffix != null) "$swoRumVersion-$versionSuffix" else swoRumVersion
 
