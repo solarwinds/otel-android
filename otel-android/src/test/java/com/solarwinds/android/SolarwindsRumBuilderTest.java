@@ -16,52 +16,82 @@
 
 package com.solarwinds.android;
 
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-import android.app.Application;
-import androidx.test.ext.junit.runners.AndroidJUnit4;
+import android.content.Context;
+import io.opentelemetry.android.OpenTelemetryRum;
+import io.opentelemetry.android.OpenTelemetryRumBuilder;
 import io.opentelemetry.android.config.OtelRumConfig;
-import io.opentelemetry.api.common.AttributeKey;
-import io.opentelemetry.api.common.Attributes;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import io.opentelemetry.android.session.SessionProvider;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-@RunWith(AndroidJUnit4.class)
-public class SolarwindsRumBuilderTest {
-    private AutoCloseable mocks;
+@ExtendWith(MockitoExtension.class)
+class SolarwindsRumBuilderTest {
+    @Mock private Context context;
 
-    @Mock Application application;
+    @Mock private OpenTelemetryRumBuilder mockOtelRumBuilder;
 
-    @Before
-    public void setup() {
-        mocks = MockitoAnnotations.openMocks(this);
-    }
+    @Mock private SessionProvider mockSessionProvider;
 
-    @After
-    public void tearDown() throws Exception {
-        mocks.close();
+    private SolarwindsRumBuilder solarwindsRumBuilder;
+
+    @BeforeEach
+    void setup() {
+        solarwindsRumBuilder =
+                new SolarwindsRumBuilder()
+                        .collectorUrl("http://example.com")
+                        .apiToken("test_token")
+                        .sessionProvider(mockSessionProvider)
+                        .scaleRatio(0.75);
     }
 
     @Test
-    public void verifyAttributesSupplierIsModifiedWhenSessionProviderIsNotNull() {
-        SolarwindsRumBuilder solarwindsRumBuilder = new SolarwindsRumBuilder();
-        OtelRumConfig otelRumConfig = new OtelRumConfig();
-        otelRumConfig
-                .setGlobalAttributes(Attributes.of(AttributeKey.stringKey("attr"), "value"))
-                .disableNetworkAttributes()
-                .disableInstrumentationDiscovery();
+    void verifyBuilderMethodsAreCalled() {
+        try (MockedStatic<OpenTelemetryRum> mockedOtelRum =
+                        Mockito.mockStatic(OpenTelemetryRum.class);
+                MockedStatic<SolarwindsRum> mockedSwRum = Mockito.mockStatic(SolarwindsRum.class)) {
 
-        solarwindsRumBuilder
-                .otelRumConfig(otelRumConfig)
-                .apiToken("token")
-                .collectorUrl("http://localhost")
-                .sessionProvider(() -> "new-session-id")
-                .build(application);
+            mockedOtelRum
+                    .when(
+                            () ->
+                                    OpenTelemetryRum.builder(
+                                            any(Context.class), any(OtelRumConfig.class)))
+                    .thenReturn(mockOtelRumBuilder);
 
-        assertInstanceOf(SessionIdAppender.class, otelRumConfig.getGlobalAttributesSupplier());
+            when(mockOtelRumBuilder.mergeResource(any())).thenReturn(mockOtelRumBuilder);
+            when(mockOtelRumBuilder.setSessionProvider(any())).thenReturn(mockOtelRumBuilder);
+            when(mockOtelRumBuilder.addSpanExporterCustomizer(any()))
+                    .thenReturn(mockOtelRumBuilder);
+            when(mockOtelRumBuilder.addLogRecordExporterCustomizer(any()))
+                    .thenReturn(mockOtelRumBuilder);
+            when(mockOtelRumBuilder.addMeterProviderCustomizer(any()))
+                    .thenReturn(mockOtelRumBuilder);
+            when(mockOtelRumBuilder.addTracerProviderCustomizer(any()))
+                    .thenReturn(mockOtelRumBuilder);
+
+            OpenTelemetryRum mockRumInstance = mock(OpenTelemetryRum.class);
+            when(mockOtelRumBuilder.build()).thenReturn(mockRumInstance);
+
+            solarwindsRumBuilder.build(context);
+
+            verify(mockOtelRumBuilder).mergeResource(any());
+            verify(mockOtelRumBuilder).setSessionProvider(mockSessionProvider);
+            verify(mockOtelRumBuilder).addSpanExporterCustomizer(any());
+            verify(mockOtelRumBuilder).addLogRecordExporterCustomizer(any());
+            verify(mockOtelRumBuilder).addMeterProviderCustomizer(any());
+            verify(mockOtelRumBuilder).addTracerProviderCustomizer(any());
+
+            verify(mockOtelRumBuilder).build();
+            mockedSwRum.verify(() -> SolarwindsRum.initialize(mockRumInstance));
+        }
     }
 }

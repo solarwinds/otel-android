@@ -18,12 +18,12 @@ package com.solarwinds.android;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import io.opentelemetry.android.session.SessionIdGenerator;
 import io.opentelemetry.api.common.Attributes;
 import io.opentelemetry.api.trace.SpanKind;
 import io.opentelemetry.context.Context;
 import io.opentelemetry.sdk.trace.samplers.SamplingResult;
 import java.util.Collections;
+import java.util.UUID;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -37,8 +37,7 @@ class SessionIdBasedSamplerTest {
     @MethodSource("rates")
     void samplingRateAndRealizedRateShouldNotDifferByMoreThanTenPercent(double rate) {
         SessionIdBasedSampler tested =
-                new SessionIdBasedSampler(
-                        rate, SessionIdGenerator.DEFAULT.INSTANCE::generateSessionId);
+                new SessionIdBasedSampler(rate, () -> UUID.randomUUID().toString());
         int sampleCount = 0;
 
         int count = 1000;

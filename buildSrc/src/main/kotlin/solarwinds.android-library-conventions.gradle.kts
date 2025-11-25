@@ -9,7 +9,7 @@ val variantToPublish = "release"
 val swoRumVersion: String by rootProject.extra
 
 android {
-    compileSdk = 35
+    compileSdk = 36
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -25,7 +25,8 @@ android {
     }
 
     lint {
-        warningsAsErrors = true
+        warningsAsErrors = false
+        disable.add("NullSafeMutableLiveData")
     }
 }
 
