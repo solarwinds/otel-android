@@ -41,7 +41,7 @@ publishing {
         create<MavenPublication>("maven") {
             groupId = "com.solarwinds"
             artifactId = computeArtifactId()
-            version = if (versionSuffix != null) "$swoRumVersion-$versionSuffix" else swoRumVersion
+            version =  if(versionSuffix != null) "$swoRumVersion-$versionSuffix" else swoRumVersion
 
             afterEvaluate {
                 from(components.findByName(variantToPublish))
@@ -74,17 +74,17 @@ publishing {
         }
     }
 }
-val signingKey: String? = System.getenv("GPG_PRIVATE_KEY")
-if (signingKey != null) {
-    signing {
-        setRequired {
-            gradle.taskGraph.allTasks.any { (it.javaClass == PublishToMavenRepository::class) }
-        }
 
-        val signingPassword = System.getenv("GPG_PRIVATE_KEY_PASSPHRASE")
-        useInMemoryPgpKeys(signingKey, signingPassword)
-        sign(publishing.publications["maven"])
+signing {
+    setRequired {
+        gradle.taskGraph.allTasks.any { (it.javaClass == PublishToMavenRepository::class) }
     }
+
+    val signingKey = System.getenv("GPG_PRIVATE_KEY")
+    val signingPassword = System.getenv("GPG_PRIVATE_KEY_PASSPHRASE")
+    useInMemoryPgpKeys(signingKey, signingPassword)
+
+    sign(publishing.publications["maven"])
 }
 
 fun computeArtifactId(): String {
