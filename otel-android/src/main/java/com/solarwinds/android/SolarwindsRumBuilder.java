@@ -16,23 +16,21 @@
 
 package com.solarwinds.android;
 
-import android.app.Application;
+import android.content.Context;
 import io.opentelemetry.android.OpenTelemetryRum;
 import io.opentelemetry.android.OpenTelemetryRumBuilder;
 import io.opentelemetry.android.config.OtelRumConfig;
-import io.opentelemetry.android.session.SessionIdGenerator;
 import io.opentelemetry.android.session.SessionProvider;
-import io.opentelemetry.api.common.AttributeKey;
-import io.opentelemetry.api.common.Attributes;
 import io.opentelemetry.exporter.otlp.logs.OtlpGrpcLogRecordExporter;
 import io.opentelemetry.exporter.otlp.metrics.OtlpGrpcMetricExporter;
 import io.opentelemetry.exporter.otlp.trace.OtlpGrpcSpanExporter;
 import io.opentelemetry.sdk.logs.export.LogRecordExporter;
 import io.opentelemetry.sdk.metrics.SdkMeterProviderBuilder;
+import io.opentelemetry.sdk.metrics.export.AggregationTemporalitySelector;
 import io.opentelemetry.sdk.metrics.export.PeriodicMetricReader;
 import io.opentelemetry.sdk.trace.SdkTracerProviderBuilder;
 import io.opentelemetry.sdk.trace.export.SpanExporter;
-import java.util.function.Supplier;
+import java.util.UUID;
 
 /** Builder for {@link SolarwindsRum} that simplifies configuration of the underlying OTel SDK */
 public class SolarwindsRumBuilder {
@@ -43,12 +41,9 @@ public class SolarwindsRumBuilder {
 
     private OtelRumConfig otelRumConfig = new OtelRumConfig();
 
-    private static final SessionProvider DEFAULT_PROVIDER =
-            SessionIdGenerator.DEFAULT.INSTANCE::generateSessionId;
+    private static final SessionProvider DEFAULT_PROVIDER = () -> UUID.randomUUID().toString();
 
     private SessionProvider sessionProvider = DEFAULT_PROVIDER;
-
-    private String sessionIdKey = "session.id";
 
     private double scaleRatio = 0.5;
 
@@ -72,26 +67,15 @@ public class SolarwindsRumBuilder {
         return this;
     }
 
-    public SolarwindsRumBuilder sessionIdKey(String sessionIdKey) {
-        this.sessionIdKey = sessionIdKey;
-        return this;
-    }
-
     public SolarwindsRumBuilder scaleRatio(double scaleRatio) {
         this.scaleRatio = scaleRatio;
         return this;
     }
 
-    public SolarwindsRum build(Application application) {
-        Supplier<Attributes> globalAttributesSupplier = otelRumConfig.getGlobalAttributesSupplier();
-        otelRumConfig.setGlobalAttributes(
-                new SessionIdAppender(
-                        globalAttributesSupplier,
-                        AttributeKey.stringKey(sessionIdKey),
-                        sessionProvider));
-
-        OpenTelemetryRumBuilder builder = OpenTelemetryRum.builder(application, otelRumConfig);
+    public SolarwindsRum build(Context context) {
+        OpenTelemetryRumBuilder builder = OpenTelemetryRum.builder(context, otelRumConfig);
         builder.mergeResource(SolarwindsResourceProvider.create())
+                .setSessionProvider(sessionProvider)
                 .addSpanExporterCustomizer(this::createSpanExporter)
                 .addLogRecordExporterCustomizer(this::createLogExporter)
                 .addMeterProviderCustomizer(this::customizeMetricProvider)
@@ -101,7 +85,7 @@ public class SolarwindsRumBuilder {
     }
 
     private SdkTracerProviderBuilder customizeTracerProvider(
-            SdkTracerProviderBuilder sdkTracerProviderBuilder, Application application) {
+            SdkTracerProviderBuilder sdkTracerProviderBuilder, Context context) {
         return sdkTracerProviderBuilder.setSampler(
                 new SessionIdBasedSampler(scaleRatio, sessionProvider));
     }
@@ -114,11 +98,13 @@ public class SolarwindsRumBuilder {
     }
 
     private SdkMeterProviderBuilder customizeMetricProvider(
-            SdkMeterProviderBuilder sdkMeterProviderBuilder, Application application) {
+            SdkMeterProviderBuilder sdkMeterProviderBuilder, Context context) {
         OtlpGrpcMetricExporter metricExporter =
                 OtlpGrpcMetricExporter.builder()
                         .setEndpoint(collectorUrl)
                         .addHeader("authorization", String.format("Bearer %s", apiToken))
+                        .setAggregationTemporalitySelector(
+                                AggregationTemporalitySelector.deltaPreferred())
                         .build();
 
         return sdkMeterProviderBuilder.registerMetricReader(

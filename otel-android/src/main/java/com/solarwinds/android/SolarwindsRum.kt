@@ -29,7 +29,7 @@ class SolarwindsRum private constructor(
     private val openTelemetryRum: OpenTelemetryRum,
 ) {
     private val logger: ExtendedLogger =
-        openTelemetryRum.openTelemetry.logsBridge
+        openTelemetryRum.getOpenTelemetry().logsBridge
             .loggerBuilder("com.solarwinds.android.rum.logs")
             .build() as ExtendedLogger
 
@@ -60,7 +60,7 @@ class SolarwindsRum private constructor(
      * @param scope The name of the meter scope.
      * @return A {@link Meter} instance for collecting metrics.
      */
-    fun meter(scope: String): Meter = openTelemetryRum.openTelemetry.getMeter(scope)
+    fun meter(scope: String): Meter = openTelemetryRum.getOpenTelemetry().getMeter(scope)
 
     /**
      * Companion object that holds the singleton instance of {@link SolarwindsRum}.
