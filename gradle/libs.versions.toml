@@ -89,7 +89,7 @@ junit-vintage-engine = { module = "org.junit.vintage:junit-vintage-engine", vers
 junit-jupiter-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "junit5" }
 junit-junit4 = { module = "junit:junit", version.ref = "junit4" }
 robolectric = { module = "org.robolectric:robolectric", version.ref = "robocop" }
-assertj-core = "org.assertj:assertj-core:3.27.3"
+assertj-core = "org.assertj:assertj-core:3.27.6"
 mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
 mockito-junit-jupiter = { module = "org.mockito:mockito-junit-jupiter", version.ref = "mockito" }
 androidx-test-core = { module = "androidx.test:core", version.ref = "android-test" }
