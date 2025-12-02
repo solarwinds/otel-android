@@ -27,7 +27,7 @@ plugins {
 }
 
 
-val swoRumVersion = "0.1.0"
+val swoRumVersion = "1.0.0"
 extra["swoRumVersion"] = swoRumVersion
 
 group = "com.solarwinds"

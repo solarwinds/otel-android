@@ -21,10 +21,6 @@ plugins {
 
 android {
     namespace = "com.solarwinds.android"
-
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
 }
 
 val mockitoAgent = configurations.create("mockitoAgent")

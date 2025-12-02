@@ -1,4 +1,4 @@
-import org.gradle.api.publish.maven.MavenPublication
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     id("com.android.library")
@@ -16,11 +16,7 @@ android {
         targetCompatibility = JavaVersion.VERSION_1_8
     }
 
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
-
-    defaultConfig{
+    defaultConfig {
         minSdk = 24
     }
 
@@ -34,6 +30,18 @@ tasks.withType<Test> {
     useJUnitPlatform()
     testLogging {
         events("passed", "failed")
+    }
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_1_8)
     }
 }
 
