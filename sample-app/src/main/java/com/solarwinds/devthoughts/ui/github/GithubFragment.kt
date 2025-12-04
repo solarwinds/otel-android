@@ -150,8 +150,8 @@ class GithubFragment : Fragment() {
                             .build()
 
                     val response = client.newCall(request).execute()
-                    if (response.isSuccessful && response.body != null) {
-                        val payload = response.body!!.string()
+                    if (response.isSuccessful) {
+                        val payload = response.body.string()
                         gitHubEvents = json.decodeFromString<List<GitHubEvent>>(payload)
                     }
                     githubActivityGauge.set(
