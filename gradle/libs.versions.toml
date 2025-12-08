@@ -24,7 +24,7 @@ opentelemetry-sdk = "1.56.0"
 opentelemetry-sdk-alpha = "1.56.0-alpha"
 opentelemetry-android = "0.16.0-alpha"
 #noinspection GradleDependency,NewerVersionAvailable
-mockito = "5.15.2"
+mockito = "5.20.0"
 robocop = "4.16"
 okhttp = "5.3.2"
 byteBuddy = "1.18.2"
