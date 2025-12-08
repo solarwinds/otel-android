@@ -32,7 +32,7 @@ Reference the following files in .github/copilot/instructions for file-type spec
 
 ### Code Organization
 
-Follow defensive coding patterns and adhere to SOLID principle
+Follow defensive coding patterns and adhere to SOLID principles
 
 #### Kotlin Files
 
