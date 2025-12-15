@@ -1,5 +1,5 @@
 [versions]
-agp = "8.13.1"
+agp = "8.13.2"
 datastorePreferences = "1.2.0"
 fragmentCompose = "1.8.9"
 kotlin = "2.2.21"
