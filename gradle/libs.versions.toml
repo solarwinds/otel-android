@@ -24,7 +24,7 @@ opentelemetry-sdk = "1.56.0"
 opentelemetry-sdk-alpha = "1.56.0-alpha"
 opentelemetry-android = "0.16.0-alpha"
 #noinspection GradleDependency,NewerVersionAvailable
-mockito = "5.15.2"
+mockk = "1.14.9"
 robocop = "4.16"
 okhttp = "5.3.2"
 byteBuddy = "1.18.2"
@@ -92,14 +92,13 @@ junit-jupiter-params = { module = "org.junit.jupiter:junit-jupiter-params", vers
 junit-junit4 = { module = "junit:junit", version.ref = "junit4" }
 robolectric = { module = "org.robolectric:robolectric", version.ref = "robocop" }
 assertj-core = "org.assertj:assertj-core:3.27.6"
-mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
-mockito-junit-jupiter = { module = "org.mockito:mockito-junit-jupiter", version.ref = "mockito" }
+mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 androidx-test-core = { module = "androidx.test:core", version.ref = "android-test" }
 androidx-test-rules = { module = "androidx.test:rules", version.ref = "android-test" }
 androidx-test-runner = { module = "androidx.test:runner", version.ref = "android-test" }
 
 [bundles]
-mocking = ["mockito-core", "mockito-junit-jupiter"]
+mocking = ["mockk"]
 junit = ["junit-jupiter-api", "junit-jupiter-engine", "junit-jupiter-params", "junit-vintage-engine", "junit-junit4"]
 
 [plugins]

@@ -23,7 +23,6 @@ android {
     namespace = "com.solarwinds.android"
 }
 
-val mockitoAgent = configurations.create("mockitoAgent")
 dependencies {
     api(platform(libs.opentelemetry.bom))
     api(libs.opentelemetry.android.core)
@@ -34,9 +33,5 @@ dependencies {
     implementation(libs.opentelemetry.api.incubator)
 
     testImplementation(libs.androidx.junit)
-    mockitoAgent(libs.mockito.core) { isTransitive = false }
-}
-
-tasks.withType<Test> {
-    jvmArgs("-javaagent:${mockitoAgent.asPath}")
+    testImplementation(libs.mockk)
 }
