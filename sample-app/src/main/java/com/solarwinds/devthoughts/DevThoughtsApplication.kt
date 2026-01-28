@@ -27,48 +27,48 @@ import com.solarwinds.devthoughts.ui.onboarding.sessionIdPreferenceKey
 import com.solarwinds.devthoughts.utils.WebsocketWorker
 import com.solarwinds.devthoughts.utils.dataStore
 import io.opentelemetry.android.session.SessionProvider
+import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
-import java.util.concurrent.TimeUnit
 
 class DevThoughtsApplication : Application() {
-    override fun onCreate() {
-        super.onCreate()
-        val collectorUrl = resources.getString(R.string.collector_url)
-        val apiToken = resources.getString(R.string.api_token)
-        SolarwindsRumBuilder()
-            .collectorUrl(collectorUrl)
-            .sessionProvider(
-                object : SessionProvider {
-                    override fun getSessionId(): String {
-                        lateinit var id: String
-                        runBlocking {
-                            val settings = dataStore.data.first()
-                            id = settings[sessionIdPreferenceKey] ?: "unset"
-                        }
-                        return id
-                    }
-                },
-            ).apiToken(apiToken)
-            .build(this)
+  override fun onCreate() {
+    super.onCreate()
+    val collectorUrl = resources.getString(R.string.collector_url)
+    val apiToken = resources.getString(R.string.api_token)
+    SolarwindsRumBuilder()
+      .collectorUrl(collectorUrl)
+      .sessionProvider(
+        object : SessionProvider {
+          override fun getSessionId(): String {
+            lateinit var id: String
+            runBlocking {
+              val settings = dataStore.data.first()
+              id = settings[sessionIdPreferenceKey] ?: "unset"
+            }
+            return id
+          }
+        }
+      )
+      .apiToken(apiToken)
+      .build(this)
 
-        val constraints =
-            Constraints
-                .Builder()
-                .setRequiredNetworkType(NetworkType.CONNECTED)
-                .setRequiresBatteryNotLow(true)
-                .build()
+    val constraints =
+      Constraints.Builder()
+        .setRequiredNetworkType(NetworkType.CONNECTED)
+        .setRequiresBatteryNotLow(true)
+        .build()
 
-        val work =
-            PeriodicWorkRequestBuilder<WebsocketWorker>(1, TimeUnit.MINUTES)
-                .setConstraints(constraints)
-                .build()
+    val work =
+      PeriodicWorkRequestBuilder<WebsocketWorker>(1, TimeUnit.MINUTES)
+        .setConstraints(constraints)
+        .build()
 
-        val workManager = WorkManager.getInstance(this)
-        workManager.enqueueUniquePeriodicWork(
-            WebsocketWorker::class.simpleName!!,
-            ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
-            work,
-        )
-    }
+    val workManager = WorkManager.getInstance(this)
+    workManager.enqueueUniquePeriodicWork(
+      WebsocketWorker::class.simpleName!!,
+      ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
+      work,
+    )
+  }
 }

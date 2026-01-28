@@ -30,43 +30,43 @@ import java.nio.charset.StandardCharsets
  * ID is provided externally via [SessionProvider].
  */
 class SessionIdBasedSampler(
-    private val scaler: Double,
-    private val sessionProvider: SessionProvider,
+  private val scaler: Double,
+  private val sessionProvider: SessionProvider,
 ) : Sampler {
-    private val threshold: Long = (scaler * Long.MAX_VALUE).toLong()
+  private val threshold: Long = (scaler * Long.MAX_VALUE).toLong()
 
-    override fun shouldSample(
-        parentContext: Context,
-        traceId: String,
-        name: String,
-        spanKind: SpanKind,
-        attributes: Attributes,
-        parentLinks: List<LinkData>,
-    ): SamplingResult {
-        val sessionId = sessionProvider.getSessionId()
-        if (sessionId.isNotEmpty()) {
-            val hashedValue = hash(sessionId)
-            if (hashedValue < threshold) {
-                return SamplingResult.recordAndSample()
-            }
-        }
-
-        return SamplingResult.drop()
+  override fun shouldSample(
+    parentContext: Context,
+    traceId: String,
+    name: String,
+    spanKind: SpanKind,
+    attributes: Attributes,
+    parentLinks: List<LinkData>,
+  ): SamplingResult {
+    val sessionId = sessionProvider.getSessionId()
+    if (sessionId.isNotEmpty()) {
+      val hashedValue = hash(sessionId)
+      if (hashedValue < threshold) {
+        return SamplingResult.recordAndSample()
+      }
     }
 
-    override fun getDescription(): String =
-        "SessionIdBasedSampler{scaler=$scaler, threshold=$threshold}"
+    return SamplingResult.drop()
+  }
 
-    private fun hash(sessionId: String): Long {
-        val bytes = sessionId.toByteArray(StandardCharsets.UTF_8)
-        return hashBytes(bytes)
-    }
+  override fun getDescription(): String =
+    "SessionIdBasedSampler{scaler=$scaler, threshold=$threshold}"
 
-    private fun hashBytes(bytes: ByteArray): Long {
-        var hash: Long = 0xcbf29ce484222325uL.toLong()
-        for (bite in bytes) {
-            hash = (hash * 1099511628211L) xor bite.toLong()
-        }
-        return hash and Long.MAX_VALUE
+  private fun hash(sessionId: String): Long {
+    val bytes = sessionId.toByteArray(StandardCharsets.UTF_8)
+    return hashBytes(bytes)
+  }
+
+  private fun hashBytes(bytes: ByteArray): Long {
+    var hash: Long = 0xcbf29ce484222325uL.toLong()
+    for (bite in bytes) {
+      hash = (hash * 1099511628211L) xor bite.toLong()
     }
+    return hash and Long.MAX_VALUE
+  }
 }

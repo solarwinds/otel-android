@@ -22,8 +22,8 @@ import io.opentelemetry.sdk.resources.Resource
 
 /** Creates a Solarwinds OTel resource */
 object SolarwindsResourceProvider {
-    @JvmStatic
-    fun create(): Resource {
-        return Resource.create(Attributes.of(stringKey("sw.data.module"), "apm"))
-    }
+  @JvmStatic
+  fun create(): Resource {
+    return Resource.create(Attributes.of(stringKey("sw.data.module"), "apm"))
+  }
 }

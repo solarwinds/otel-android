@@ -21,8 +21,8 @@ import io.opentelemetry.sdk.testing.assertj.LogRecordDataAssert
 import io.opentelemetry.sdk.testing.assertj.OpenTelemetryAssertions.assertThat
 
 fun LogRecordDataAssert.hasEventName(eventName: String): LogRecordDataAssert {
-    isNotNull()
-    assertThat(this.actual()).isInstanceOf(ExtendedLogRecordData::class.java)
-    assertThat((this.actual() as ExtendedLogRecordData).eventName).isEqualTo(eventName)
-    return this
+  isNotNull()
+  assertThat(this.actual()).isInstanceOf(ExtendedLogRecordData::class.java)
+  assertThat((this.actual() as ExtendedLogRecordData).eventName).isEqualTo(eventName)
+  return this
 }

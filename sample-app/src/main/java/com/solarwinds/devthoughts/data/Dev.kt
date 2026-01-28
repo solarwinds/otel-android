@@ -22,8 +22,8 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "dev")
 data class Dev(
-    @PrimaryKey(autoGenerate = true) val devId: Int,
-    @ColumnInfo(name = "username") val username: String?,
-    @ColumnInfo(name = "favorite_ide") val favoriteIde: String?,
-    @ColumnInfo(name = "favorite_lang") val favoriteLang: String?,
+  @PrimaryKey(autoGenerate = true) val devId: Int,
+  @ColumnInfo(name = "username") val username: String?,
+  @ColumnInfo(name = "favorite_ide") val favoriteIde: String?,
+  @ColumnInfo(name = "favorite_lang") val favoriteLang: String?,
 )

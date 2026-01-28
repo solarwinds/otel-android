@@ -18,7 +18,6 @@ package com.solarwinds.devthoughts.utils
 
 import android.util.Log
 import kotlinx.coroutines.delay
-import okhttp3.OkHttpClient
 import okhttp3.OkHttpClient.*
 import okhttp3.Request
 import okhttp3.Response
@@ -26,53 +25,51 @@ import okhttp3.WebSocket
 import okhttp3.WebSocketListener
 
 class WebSocketClient {
-    private val client = Builder()
-        .build()
+  private val client = Builder().build()
 
-    private var websocketConnection: WebSocket? = null
+  private var websocketConnection: WebSocket? = null
 
-    fun connect(): WebSocketClient {
-        val request = Request.Builder()
-            .url("https://echo.websocket.org/.ws")
-            .build()
+  fun connect(): WebSocketClient {
+    val request = Request.Builder().url("https://echo.websocket.org/.ws").build()
 
-        val listener = object : WebSocketListener() {
-            override fun onOpen(webSocket: WebSocket, response: Response) {
-                Log.d("WebSocketClient", "Connected to WebSocket")
-                websocketConnection = webSocket
-            }
-
-            override fun onMessage(webSocket: WebSocket, text: String) {
-                Log.d("WebSocketClient", "Received: $text")
-            }
-
-            override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
-                Log.d("WebSocketClient", "Closing: $code $reason")
-                webSocket.close(1000, null)
-            }
-
-            override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
-                Log.e("WebSocketClient", "Error: ${t.message}")
-            }
+    val listener =
+      object : WebSocketListener() {
+        override fun onOpen(webSocket: WebSocket, response: Response) {
+          Log.d("WebSocketClient", "Connected to WebSocket")
+          websocketConnection = webSocket
         }
 
-        client.newWebSocket(request, listener)
-        return this
-    }
-
-    suspend fun hasConnected(): Boolean {
-        while (websocketConnection == null) {
-            delay(500)
+        override fun onMessage(webSocket: WebSocket, text: String) {
+          Log.d("WebSocketClient", "Received: $text")
         }
-        return true
-    }
 
-    fun sendHello(): WebSocketClient {
-        websocketConnection?.send("Hello, Server!")
-        return this
-    }
+        override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
+          Log.d("WebSocketClient", "Closing: $code $reason")
+          webSocket.close(1000, null)
+        }
 
-    fun close() {
-        client.dispatcher.executorService.shutdown()
+        override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
+          Log.e("WebSocketClient", "Error: ${t.message}")
+        }
+      }
+
+    client.newWebSocket(request, listener)
+    return this
+  }
+
+  suspend fun hasConnected(): Boolean {
+    while (websocketConnection == null) {
+      delay(500)
     }
+    return true
+  }
+
+  fun sendHello(): WebSocketClient {
+    websocketConnection?.send("Hello, Server!")
+    return this
+  }
+
+  fun close() {
+    client.dispatcher.executorService.shutdown()
+  }
 }

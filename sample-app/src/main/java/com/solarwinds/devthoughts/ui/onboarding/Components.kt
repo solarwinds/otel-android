@@ -45,259 +45,164 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import com.solarwinds.devthoughts.data.OnBoardingViewModel
 import kotlinx.serialization.Serializable
 
+@Serializable object UsernameRoute
 
-@Serializable
-object UsernameRoute
+@Serializable object LangRoute
 
-@Serializable
-object LangRoute
+@Serializable object IdeRoute
 
-@Serializable
-object IdeRoute
-
-@Serializable
-object SessionIdRoute
+@Serializable object SessionIdRoute
 
 val onBoardingPreferenceKey = booleanPreferencesKey("onboarded")
 
 val sessionIdPreferenceKey = stringPreferencesKey("session-id")
 
-
 @Composable
 fun Username(viewModel: OnBoardingViewModel, navigation: (route: Any) -> Unit) {
-    val dev by viewModel.dev.collectAsState()
+  val dev by viewModel.dev.collectAsState()
 
-    var usernameValid by remember { mutableStateOf(false) }
+  var usernameValid by remember { mutableStateOf(false) }
 
-    Column(
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.padding(horizontal = 16.dp)
-    ) {
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(150.dp)
-        ) {
-            Box(
-                modifier = Modifier
-                    .padding(8.dp)
-                    .fillMaxSize()
-            ) {
-                Column(
-                    verticalArrangement = Arrangement.SpaceAround,
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    Text("Please enter your GitHub username")
-                    OutlinedTextField(dev.username ?: "", onValueChange = {
-                        viewModel.updateUsername(it)
-                        usernameValid = it.isNotEmpty()
-                    }, label = { Text("Username") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-            }
-        }
-
-        TextButton(
-            enabled = usernameValid,
-            onClick = {
-                navigation(LangRoute)
+  Column(
+    verticalArrangement = Arrangement.Center,
+    horizontalAlignment = Alignment.CenterHorizontally,
+    modifier = Modifier.padding(horizontal = 16.dp),
+  ) {
+    Card(modifier = Modifier.fillMaxWidth().height(150.dp)) {
+      Box(modifier = Modifier.padding(8.dp).fillMaxSize()) {
+        Column(verticalArrangement = Arrangement.SpaceAround, modifier = Modifier.fillMaxSize()) {
+          Text("Please enter your GitHub username")
+          OutlinedTextField(
+            dev.username ?: "",
+            onValueChange = {
+              viewModel.updateUsername(it)
+              usernameValid = it.isNotEmpty()
             },
-        ) {
-            Text("Next")
+            label = { Text("Username") },
+            modifier = Modifier.fillMaxWidth(),
+          )
         }
+      }
     }
+
+    TextButton(enabled = usernameValid, onClick = { navigation(LangRoute) }) { Text("Next") }
+  }
 }
 
 @Composable
 fun FavoriteLang(viewModel: OnBoardingViewModel, navigation: (route: Any) -> Unit) {
-    val dev by viewModel.dev.collectAsState()
-    var langValid by remember { mutableStateOf(false) }
+  val dev by viewModel.dev.collectAsState()
+  var langValid by remember { mutableStateOf(false) }
 
-    Column(
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.padding(horizontal = 16.dp)
-    ) {
-
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(150.dp)
-        ) {
-            Box(
-                modifier = Modifier
-                    .padding(8.dp)
-                    .fillMaxSize()
-            ) {
-                Column(
-                    verticalArrangement = Arrangement.SpaceAround,
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    Text("Please enter your favorite programming language")
-                    OutlinedTextField(dev.favoriteLang ?: "", onValueChange = {
-                        viewModel.updateLang(it)
-                        langValid = it.isNotEmpty()
-                    }, label = { Text("Language") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-            }
+  Column(
+    verticalArrangement = Arrangement.Center,
+    horizontalAlignment = Alignment.CenterHorizontally,
+    modifier = Modifier.padding(horizontal = 16.dp),
+  ) {
+    Card(modifier = Modifier.fillMaxWidth().height(150.dp)) {
+      Box(modifier = Modifier.padding(8.dp).fillMaxSize()) {
+        Column(verticalArrangement = Arrangement.SpaceAround, modifier = Modifier.fillMaxSize()) {
+          Text("Please enter your favorite programming language")
+          OutlinedTextField(
+            dev.favoriteLang ?: "",
+            onValueChange = {
+              viewModel.updateLang(it)
+              langValid = it.isNotEmpty()
+            },
+            label = { Text("Language") },
+            modifier = Modifier.fillMaxWidth(),
+          )
         }
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            TextButton(
-                onClick = {
-                    navigation(UsernameRoute)
-                },
-            ) {
-                Text("Previous")
-            }
-            TextButton(
-                enabled = langValid,
-                onClick = {
-                    navigation(IdeRoute)
-                },
-            ) {
-                Text("Next")
-            }
-        }
+      }
     }
+    Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
+      TextButton(onClick = { navigation(UsernameRoute) }) { Text("Previous") }
+      TextButton(enabled = langValid, onClick = { navigation(IdeRoute) }) { Text("Next") }
+    }
+  }
 }
 
 @Composable
-fun FavoriteIde(
-    viewModel: OnBoardingViewModel,
-    navigation: (route: Any) -> Unit
-) {
-    val dev by viewModel.dev.collectAsState()
-    var ideValid by remember { mutableStateOf(false) }
+fun FavoriteIde(viewModel: OnBoardingViewModel, navigation: (route: Any) -> Unit) {
+  val dev by viewModel.dev.collectAsState()
+  var ideValid by remember { mutableStateOf(false) }
 
-    Column(
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.padding(horizontal = 16.dp)
-    ) {
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(150.dp)
-        ) {
-            Box(
-                modifier = Modifier
-                    .padding(8.dp)
-                    .fillMaxSize()
-            ) {
-                Column(
-                    verticalArrangement = Arrangement.SpaceAround,
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    Text("Please enter your favorite IDE")
-                    OutlinedTextField(dev.favoriteIde ?: "", onValueChange = {
-                        viewModel.updateIde(it)
-                        ideValid = it.isNotEmpty()
-                    }, label = { Text("IDE") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-            }
+  Column(
+    verticalArrangement = Arrangement.Center,
+    horizontalAlignment = Alignment.CenterHorizontally,
+    modifier = Modifier.padding(horizontal = 16.dp),
+  ) {
+    Card(modifier = Modifier.fillMaxWidth().height(150.dp)) {
+      Box(modifier = Modifier.padding(8.dp).fillMaxSize()) {
+        Column(verticalArrangement = Arrangement.SpaceAround, modifier = Modifier.fillMaxSize()) {
+          Text("Please enter your favorite IDE")
+          OutlinedTextField(
+            dev.favoriteIde ?: "",
+            onValueChange = {
+              viewModel.updateIde(it)
+              ideValid = it.isNotEmpty()
+            },
+            label = { Text("IDE") },
+            modifier = Modifier.fillMaxWidth(),
+          )
         }
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            TextButton(
-                onClick = {
-                    navigation(LangRoute)
-                },
-            ) {
-                Text("Previous")
-            }
-            TextButton(
-                enabled = ideValid,
-                onClick = { navigation(SessionIdRoute) },
-            ) {
-                Text("Next")
-            }
-        }
+      }
     }
+    Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
+      TextButton(onClick = { navigation(LangRoute) }) { Text("Previous") }
+      TextButton(enabled = ideValid, onClick = { navigation(SessionIdRoute) }) { Text("Next") }
+    }
+  }
 }
 
 @Composable
 fun SessionId(
-    viewModel: OnBoardingViewModel,
-    navigation: (route: Any) -> Unit,
-    finishOnboarding: () -> Unit
+  viewModel: OnBoardingViewModel,
+  navigation: (route: Any) -> Unit,
+  finishOnboarding: () -> Unit,
 ) {
-    val sessionId by viewModel.sessionId.collectAsState()
-    var idValid by remember { mutableStateOf(false) }
+  val sessionId by viewModel.sessionId.collectAsState()
+  var idValid by remember { mutableStateOf(false) }
 
-    Column(
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.padding(horizontal = 16.dp)
-    ) {
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(150.dp)
-        ) {
-            Box(
-                modifier = Modifier
-                    .padding(8.dp)
-                    .fillMaxSize()
-            ) {
-                Column(
-                    verticalArrangement = Arrangement.SpaceAround,
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    Text("Please enter a session id")
-                    OutlinedTextField(sessionId, onValueChange = {
-                        viewModel.updateSessionId(it)
-                        idValid = it.isNotEmpty()
-                    }, label = { Text("Session id") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-            }
+  Column(
+    verticalArrangement = Arrangement.Center,
+    horizontalAlignment = Alignment.CenterHorizontally,
+    modifier = Modifier.padding(horizontal = 16.dp),
+  ) {
+    Card(modifier = Modifier.fillMaxWidth().height(150.dp)) {
+      Box(modifier = Modifier.padding(8.dp).fillMaxSize()) {
+        Column(verticalArrangement = Arrangement.SpaceAround, modifier = Modifier.fillMaxSize()) {
+          Text("Please enter a session id")
+          OutlinedTextField(
+            sessionId,
+            onValueChange = {
+              viewModel.updateSessionId(it)
+              idValid = it.isNotEmpty()
+            },
+            label = { Text("Session id") },
+            modifier = Modifier.fillMaxWidth(),
+          )
         }
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            TextButton(
-                onClick = {
-                    navigation(LangRoute)
-                },
-            ) {
-                Text("Previous")
-            }
-            TextButton(
-                enabled = idValid,
-                onClick = finishOnboarding,
-            ) {
-                Text("Finish")
-            }
-        }
+      }
     }
+    Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
+      TextButton(onClick = { navigation(LangRoute) }) { Text("Previous") }
+      TextButton(enabled = idValid, onClick = finishOnboarding) { Text("Finish") }
+    }
+  }
 }
 
 @Composable
 fun Loading() {
-    Column(
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .padding(horizontal = 16.dp)
-            .fillMaxSize()
-    ) {
-        CircularProgressIndicator(
-            modifier = Modifier.width(64.dp),
-            color = MaterialTheme.colorScheme.secondary,
-            trackColor = MaterialTheme.colorScheme.surfaceVariant,
-        )
-    }
+  Column(
+    verticalArrangement = Arrangement.Center,
+    horizontalAlignment = Alignment.CenterHorizontally,
+    modifier = Modifier.padding(horizontal = 16.dp).fillMaxSize(),
+  ) {
+    CircularProgressIndicator(
+      modifier = Modifier.width(64.dp),
+      color = MaterialTheme.colorScheme.secondary,
+      trackColor = MaterialTheme.colorScheme.surfaceVariant,
+    )
+  }
 }

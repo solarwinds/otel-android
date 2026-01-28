@@ -46,136 +46,97 @@ import com.solarwinds.devthoughts.data.Thought
 
 @Composable
 fun HomePlaceholder() {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Center
-    ) {
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(150.dp)
+  Column(
+    modifier = Modifier.fillMaxSize().padding(16.dp),
+    verticalArrangement = Arrangement.Center,
+  ) {
+    Card(modifier = Modifier.fillMaxWidth().height(150.dp)) {
+      Box(modifier = Modifier.padding(8.dp).fillMaxSize()) {
+        Column(
+          verticalArrangement = Arrangement.Center,
+          horizontalAlignment = Alignment.CenterHorizontally,
+          modifier = Modifier.fillMaxSize(),
         ) {
-            Box(
-                modifier = Modifier
-                    .padding(8.dp)
-                    .fillMaxSize()
-            ) {
-                Column(
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    Text("You haven't registered any thoughts, sadly!")
-                    Text("No thoughts yet?")
-                }
-            }
+          Text("You haven't registered any thoughts, sadly!")
+          Text("No thoughts yet?")
         }
+      }
     }
+  }
 }
 
 @Composable
 fun ThoughtView(thought: Thought) {
-    var show by remember { mutableStateOf(false) }
-    var scenario by remember { mutableStateOf("") }
+  var show by remember { mutableStateOf(false) }
+  var scenario by remember { mutableStateOf("") }
 
-    if (show) {
-        InputDialog(scenario, {
-            show = false
-        }) {
-            when (it.lowercase()) {
-                "a crash" -> throw RuntimeException("App crashing")
-                "an anr" -> Thread.sleep(6000)
-            }
-            show = false
-        }
-    } else {
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp)
-                .pointerInput(Unit) {
-                    detectTapGestures(
-                        onDoubleTap = {
-                            show = true
-                            scenario = "a crash"
-                        },
-                        onLongPress = {
-                            show = true
-                            scenario = "an anr"
-                        }
-                    )
-                },
-        ) {
-            Box(
-                Modifier
-                    .fillMaxSize()
-                    .padding(8.dp)
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    Text(thought.body)
-                }
-            }
-        }
+  if (show) {
+    InputDialog(scenario, { show = false }) {
+      when (it.lowercase()) {
+        "a crash" -> throw RuntimeException("App crashing")
+        "an anr" -> Thread.sleep(6000)
+      }
+      show = false
     }
+  } else {
+    Card(
+      modifier =
+        Modifier.fillMaxWidth().height(50.dp).pointerInput(Unit) {
+          detectTapGestures(
+            onDoubleTap = {
+              show = true
+              scenario = "a crash"
+            },
+            onLongPress = {
+              show = true
+              scenario = "an anr"
+            },
+          )
+        }
+    ) {
+      Box(Modifier.fillMaxSize().padding(8.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxSize()) {
+          Text(thought.body)
+        }
+      }
+    }
+  }
 }
 
 @Composable
 fun DevThoughtsView(thoughts: List<Thought>) {
-    Column(
-        verticalArrangement = Arrangement.Top,
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(8.dp)
-            .verticalScroll(rememberScrollState())
+  Column(
+    verticalArrangement = Arrangement.Top,
+    modifier = Modifier.fillMaxSize().padding(8.dp).verticalScroll(rememberScrollState()),
+  ) {
+    Row(
+      horizontalArrangement = Arrangement.Center,
+      verticalAlignment = Alignment.CenterVertically,
+      modifier = Modifier.fillMaxWidth(),
     ) {
-        Row(
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(
-                "Dev thoughts",
-                style = MaterialTheme.typography.titleLarge
-            )
-        }
-        thoughts.map {
-            Spacer(Modifier.height(5.dp))
-            ThoughtView(it)
-        }
+      Text("Dev thoughts", style = MaterialTheme.typography.titleLarge)
     }
+    thoughts.map {
+      Spacer(Modifier.height(5.dp))
+      ThoughtView(it)
+    }
+  }
 }
 
 @Composable
-fun InputDialog(
-    scenario: String,
-    onDismiss: () -> Unit,
-    onSubmit: (String) -> Unit
-) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("Alert") },
-        text = {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Text("You're about to cause $scenario")
-            }
-        },
-        confirmButton = {
-            TextButton(onClick = { onSubmit(scenario) }) {
-                Text("Proceed")
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Cancel")
-            }
-        }
-    )
+fun InputDialog(scenario: String, onDismiss: () -> Unit, onSubmit: (String) -> Unit) {
+  AlertDialog(
+    onDismissRequest = onDismiss,
+    title = { Text("Alert") },
+    text = {
+      Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center,
+      ) {
+        Text("You're about to cause $scenario")
+      }
+    },
+    confirmButton = { TextButton(onClick = { onSubmit(scenario) }) { Text("Proceed") } },
+    dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } },
+  )
 }

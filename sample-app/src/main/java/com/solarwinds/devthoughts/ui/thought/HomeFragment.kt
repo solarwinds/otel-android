@@ -30,23 +30,22 @@ import com.solarwinds.devthoughts.data.Thought
 import com.solarwinds.devthoughts.ui.theme.AppTheme
 
 class HomeFragment : Fragment() {
-    private lateinit var repository: Repository
+  private lateinit var repository: Repository
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ): View =
-        content {
-            repository = Repository.create(DevThoughtsDatabase.getInstance(requireContext()))
-            val thoughts: List<Thought> by repository.findAllThoughts().collectAsState(listOf())
+  override fun onCreateView(
+    inflater: LayoutInflater,
+    container: ViewGroup?,
+    savedInstanceState: Bundle?,
+  ): View = content {
+    repository = Repository.create(DevThoughtsDatabase.getInstance(requireContext()))
+    val thoughts: List<Thought> by repository.findAllThoughts().collectAsState(listOf())
 
-            AppTheme {
-                if (thoughts.isEmpty()) {
-                    HomePlaceholder()
-                } else {
-                    DevThoughtsView(thoughts)
-                }
-            }
-        }
+    AppTheme {
+      if (thoughts.isEmpty()) {
+        HomePlaceholder()
+      } else {
+        DevThoughtsView(thoughts)
+      }
+    }
+  }
 }
