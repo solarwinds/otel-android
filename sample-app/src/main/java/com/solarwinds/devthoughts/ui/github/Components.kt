@@ -39,54 +39,38 @@ import com.solarwinds.devthoughts.data.GitHubEvent
 
 @Composable
 fun GithubActivityView(githubEvents: List<GitHubEvent>) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-            .verticalScroll(rememberScrollState())
+  Column(modifier = Modifier.fillMaxSize().padding(16.dp).verticalScroll(rememberScrollState())) {
+    Row(
+      horizontalArrangement = Arrangement.Center,
+      verticalAlignment = Alignment.CenterVertically,
+      modifier = Modifier.fillMaxWidth(),
     ) {
-        Row(
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(
-                "Your Github Activity",
-                style = MaterialTheme.typography.titleLarge
-            )
-        }
-        githubEvents.map {
-            Spacer(Modifier.height(5.dp))
-            GitHubEventView(it)
-        }
+      Text("Your Github Activity", style = MaterialTheme.typography.titleLarge)
     }
+    githubEvents.map {
+      Spacer(Modifier.height(5.dp))
+      GitHubEventView(it)
+    }
+  }
 }
 
 @Composable
 fun GitHubEventView(gitHubEvent: GitHubEvent) {
-    Card(modifier = Modifier.height(100.dp)) {
-        Box(
-            modifier = Modifier
-                .padding(8.dp)
-                .fillMaxSize()
-        ) {
-            Column(
-                verticalArrangement = Arrangement.Center,
-                modifier = Modifier
-                    .fillMaxSize()
-            ) {
-                Row {
-                    Text("Type:", style = MaterialTheme.typography.labelLarge)
-                    Spacer(Modifier.width(10.dp))
-                    Text(gitHubEvent.type)
-                }
-                Spacer(Modifier.height(10.dp))
-                Row {
-                    Text("Repository:", style = MaterialTheme.typography.labelLarge)
-                    Spacer(Modifier.width(10.dp))
-                    Text(gitHubEvent.repo.name)
-                }
-            }
+  Card(modifier = Modifier.height(100.dp)) {
+    Box(modifier = Modifier.padding(8.dp).fillMaxSize()) {
+      Column(verticalArrangement = Arrangement.Center, modifier = Modifier.fillMaxSize()) {
+        Row {
+          Text("Type:", style = MaterialTheme.typography.labelLarge)
+          Spacer(Modifier.width(10.dp))
+          Text(gitHubEvent.type)
         }
+        Spacer(Modifier.height(10.dp))
+        Row {
+          Text("Repository:", style = MaterialTheme.typography.labelLarge)
+          Spacer(Modifier.width(10.dp))
+          Text(gitHubEvent.repo.name)
+        }
+      }
     }
+  }
 }

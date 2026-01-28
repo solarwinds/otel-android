@@ -21,31 +21,25 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
-class Repository(
-    private val devDao: DevDao,
-    private val thoughtDao: DevThoughtDao,
-) {
-    private val coroutineScope = CoroutineScope(Dispatchers.IO)
+class Repository(private val devDao: DevDao, private val thoughtDao: DevThoughtDao) {
+  private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
-    fun writeDev(dev: Dev) {
-        coroutineScope.launch {
-            devDao.insert(dev)
-        }
-    }
+  fun writeDev(dev: Dev) {
+    coroutineScope.launch { devDao.insert(dev) }
+  }
 
-    fun writeThought(thought: Thought) {
-        coroutineScope.launch {
-            thoughtDao.insert(thought)
-        }
-    }
+  fun writeThought(thought: Thought) {
+    coroutineScope.launch { thoughtDao.insert(thought) }
+  }
 
-    fun findDev(devId: Int): Flow<Dev?> = devDao.findById(devId)
+  fun findDev(devId: Int): Flow<Dev?> = devDao.findById(devId)
 
-    fun findAllThoughts(): Flow<List<Thought>> = thoughtDao.findAll()
+  fun findAllThoughts(): Flow<List<Thought>> = thoughtDao.findAll()
 
-    fun findAllDev(): Flow<List<Dev>> = devDao.findAll()
+  fun findAllDev(): Flow<List<Dev>> = devDao.findAll()
 
-    companion object {
-        fun create(database: DevThoughtsDatabase): Repository = Repository(database.devDao(), database.devThoughtDao())
-    }
+  companion object {
+    fun create(database: DevThoughtsDatabase): Repository =
+      Repository(database.devDao(), database.devThoughtDao())
+  }
 }

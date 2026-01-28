@@ -63,101 +63,83 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 class OnboardingActivity : ComponentActivity() {
-    private val viewmodel: OnBoardingViewModel by viewModels()
-    private lateinit var repository: Repository
+  private val viewmodel: OnBoardingViewModel by viewModels()
+  private lateinit var repository: Repository
 
-    @OptIn(ExperimentalMaterial3Api::class)
-    override fun onCreate(savedInstanceState: Bundle?) {
-        enableEdgeToEdge()
-        super.onCreate(savedInstanceState)
-        repository = Repository.create(DevThoughtsDatabase.getInstance(applicationContext))
+  @OptIn(ExperimentalMaterial3Api::class)
+  override fun onCreate(savedInstanceState: Bundle?) {
+    enableEdgeToEdge()
+    super.onCreate(savedInstanceState)
+    repository = Repository.create(DevThoughtsDatabase.getInstance(applicationContext))
 
-        setContent {
-            val navController = rememberNavController()
-            val hasOnboarded = viewmodel.hasOnboard.collectAsState(initial = false)
-            val hasOnboardedDb = viewmodel.hasOnboardDb.collectAsState(initial = false)
+    setContent {
+      val navController = rememberNavController()
+      val hasOnboarded = viewmodel.hasOnboard.collectAsState(initial = false)
+      val hasOnboardedDb = viewmodel.hasOnboardDb.collectAsState(initial = false)
 
-            var loading by remember { mutableStateOf(true) }
-            AppTheme {
-                if (loading) {
-                    LaunchedEffect(onBoardingPreferenceKey) {
-                        applicationContext.dataStore.data
-                            .map { settings ->
-                                settings[onBoardingPreferenceKey] ?: false
-                            }.collectLatest {
-                                loading = false
-                            }
-                    }
-                    Loading()
-                } else {
-                    if (hasOnboarded.value) {
-                        Loading()
-                        LaunchedEffect(true) {
-                            applicationContext.dataStore.edit { settings ->
-                                settings[onBoardingPreferenceKey] = true
-                                settings[sessionIdPreferenceKey] = viewmodel.sessionId.value
-                            }
+      var loading by remember { mutableStateOf(true) }
+      AppTheme {
+        if (loading) {
+          LaunchedEffect(onBoardingPreferenceKey) {
+            applicationContext.dataStore.data
+              .map { settings -> settings[onBoardingPreferenceKey] ?: false }
+              .collectLatest { loading = false }
+          }
+          Loading()
+        } else {
+          if (hasOnboarded.value) {
+            Loading()
+            LaunchedEffect(true) {
+              applicationContext.dataStore.edit { settings ->
+                settings[onBoardingPreferenceKey] = true
+                settings[sessionIdPreferenceKey] = viewmodel.sessionId.value
+              }
 
-                            launch(Dispatchers.IO) {
-                                repository.writeDev(viewmodel.dev.value)
-                                viewmodel.updateHasOnboardedDb(true)
-                            }
-                        }
-
-                        if (hasOnboardedDb.value) {
-                            startActivity(Intent(this@OnboardingActivity, MainActivity::class.java))
-                            finish()
-                        }
-                    } else {
-                        Scaffold(
-                            modifier = Modifier.fillMaxSize(),
-                            topBar = {
-                                TopAppBar(
-                                    colors =
-                                        TopAppBarDefaults.topAppBarColors(
-                                            containerColor = MaterialTheme.colorScheme.primaryContainer,
-                                            titleContentColor = MaterialTheme.colorScheme.primary,
-                                        ),
-                                    title = {
-                                        Text(getString(R.string.app_name))
-                                    },
-                                )
-                            },
-                        ) { innerPadding ->
-                            val navigation = { route: Any ->
-                                navController.navigate(route)
-                            }
-
-                            NavHost(
-                                navController = navController,
-                                startDestination = UsernameRoute,
-                                modifier =
-                                    Modifier
-                                        .fillMaxSize()
-                                        .padding(innerPadding),
-                            ) {
-                                composable<UsernameRoute> {
-                                    Username(viewmodel, navigation)
-                                }
-
-                                composable<LangRoute> {
-                                    FavoriteLang(viewmodel, navigation)
-                                }
-
-                                composable<IdeRoute> {
-                                    FavoriteIde(viewmodel, navigation)
-                                }
-
-                                composable<SessionIdRoute> {
-                                    SessionId(viewmodel, navigation) {
-                                        viewmodel.updateHasOnboarded(true)
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+              launch(Dispatchers.IO) {
+                repository.writeDev(viewmodel.dev.value)
+                viewmodel.updateHasOnboardedDb(true)
+              }
             }
+
+            if (hasOnboardedDb.value) {
+              startActivity(Intent(this@OnboardingActivity, MainActivity::class.java))
+              finish()
+            }
+          } else {
+            Scaffold(
+              modifier = Modifier.fillMaxSize(),
+              topBar = {
+                TopAppBar(
+                  colors =
+                    TopAppBarDefaults.topAppBarColors(
+                      containerColor = MaterialTheme.colorScheme.primaryContainer,
+                      titleContentColor = MaterialTheme.colorScheme.primary,
+                    ),
+                  title = { Text(getString(R.string.app_name)) },
+                )
+              },
+            ) { innerPadding ->
+              val navigation = { route: Any -> navController.navigate(route) }
+
+              NavHost(
+                navController = navController,
+                startDestination = UsernameRoute,
+                modifier = Modifier.fillMaxSize().padding(innerPadding),
+              ) {
+                composable<UsernameRoute> { Username(viewmodel, navigation) }
+
+                composable<LangRoute> { FavoriteLang(viewmodel, navigation) }
+
+                composable<IdeRoute> { FavoriteIde(viewmodel, navigation) }
+
+                composable<SessionIdRoute> {
+                  SessionId(viewmodel, navigation) { viewmodel.updateHasOnboarded(true) }
+                }
+              }
+            }
+          }
         }
+      }
     }
+  }
 }

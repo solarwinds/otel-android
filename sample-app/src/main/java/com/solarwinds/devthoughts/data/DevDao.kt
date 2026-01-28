@@ -24,24 +24,20 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface DevDao {
-    @Query("SELECT * FROM Dev")
-    fun findAll(): Flow<List<Dev>>
+  @Query("SELECT * FROM Dev") fun findAll(): Flow<List<Dev>>
 
-    @Query("SELECT * FROM dev WHERE devId == :devId")
-    fun findById(devId: Int): Flow<Dev>
+  @Query("SELECT * FROM dev WHERE devId == :devId") fun findById(devId: Int): Flow<Dev>
 
-    @Query("SELECT * FROM dev WHERE username LIKE :username")
-    fun findByUsername(username: String): Flow<List<Dev>>
+  @Query("SELECT * FROM dev WHERE username LIKE :username")
+  fun findByUsername(username: String): Flow<List<Dev>>
 
-    @Query("SELECT * FROM dev WHERE favorite_lang LIKE :lang")
-    fun findByFavoriteLang(lang: String): Flow<List<Dev>>
+  @Query("SELECT * FROM dev WHERE favorite_lang LIKE :lang")
+  fun findByFavoriteLang(lang: String): Flow<List<Dev>>
 
-    @Query("SELECT * FROM dev WHERE favorite_ide LIKE :ide")
-    fun findByFavoriteIde(ide: String): Flow<List<Dev>>
+  @Query("SELECT * FROM dev WHERE favorite_ide LIKE :ide")
+  fun findByFavoriteIde(ide: String): Flow<List<Dev>>
 
-    @Insert
-    suspend fun insert(vararg devs: Dev)
+  @Insert suspend fun insert(vararg devs: Dev)
 
-    @Delete
-    suspend fun delete(dev: Dev)
+  @Delete suspend fun delete(dev: Dev)
 }

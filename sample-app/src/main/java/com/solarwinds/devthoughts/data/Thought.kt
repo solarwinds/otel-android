@@ -21,7 +21,7 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "thought")
 data class Thought(
-    @PrimaryKey(autoGenerate = true) val thoughtId: Int,
-    val devId: Int,
-    val body: String,
+  @PrimaryKey(autoGenerate = true) val thoughtId: Int,
+  val devId: Int,
+  val body: String,
 )

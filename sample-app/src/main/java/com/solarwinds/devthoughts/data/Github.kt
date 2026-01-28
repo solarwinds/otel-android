@@ -18,13 +18,6 @@ package com.solarwinds.devthoughts.data
 
 import kotlinx.serialization.Serializable
 
-@Serializable
-data class GitHubEvent(
-    val type: String,
-    val repo: GitRepository,
-)
+@Serializable data class GitHubEvent(val type: String, val repo: GitRepository)
 
-@Serializable
-data class GitRepository(
-    val name: String,
-)
+@Serializable data class GitRepository(val name: String)

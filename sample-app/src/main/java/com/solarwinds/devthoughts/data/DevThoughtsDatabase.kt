@@ -23,28 +23,23 @@ import androidx.room.RoomDatabase
 
 @Database(entities = [Dev::class, Thought::class], version = 1, exportSchema = false)
 abstract class DevThoughtsDatabase : RoomDatabase() {
-    abstract fun devDao(): DevDao
+  abstract fun devDao(): DevDao
 
-    abstract fun devThoughtDao(): DevThoughtDao
+  abstract fun devThoughtDao(): DevThoughtDao
 
-    companion object {
-        private lateinit var database: DevThoughtsDatabase
+  companion object {
+    private lateinit var database: DevThoughtsDatabase
 
-        fun getInstance(context: Context): DevThoughtsDatabase {
-            if (::database.isInitialized) {
-                return database
-            }
+    fun getInstance(context: Context): DevThoughtsDatabase {
+      if (::database.isInitialized) {
+        return database
+      }
 
-            synchronized(this) {
-                database =
-                    Room
-                        .databaseBuilder(
-                            context,
-                            DevThoughtsDatabase::class.java,
-                            "dev.thoughts.db",
-                        ).build()
-            }
-            return database
-        }
+      synchronized(this) {
+        database =
+          Room.databaseBuilder(context, DevThoughtsDatabase::class.java, "dev.thoughts.db").build()
+      }
+      return database
     }
+  }
 }

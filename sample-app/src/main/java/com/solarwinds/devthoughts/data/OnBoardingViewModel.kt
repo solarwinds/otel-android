@@ -22,56 +22,43 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
 class OnBoardingViewModel : ViewModel() {
-    private val _dev = MutableStateFlow(Dev(0, null, null, null))
+  private val _dev = MutableStateFlow(Dev(0, null, null, null))
 
-    private val _hasOnboarded = MutableStateFlow(false)
+  private val _hasOnboarded = MutableStateFlow(false)
 
-    private val _hasOnboardedDb = MutableStateFlow(false)
+  private val _hasOnboardedDb = MutableStateFlow(false)
 
-    private val _sessionId = MutableStateFlow("")
+  private val _sessionId = MutableStateFlow("")
 
-    val dev = _dev.asStateFlow()
+  val dev = _dev.asStateFlow()
 
-    val hasOnboard = _hasOnboarded.asStateFlow()
+  val hasOnboard = _hasOnboarded.asStateFlow()
 
-    val hasOnboardDb = _hasOnboarded.asStateFlow()
+  val hasOnboardDb = _hasOnboarded.asStateFlow()
 
-    val sessionId = _sessionId.asStateFlow()
+  val sessionId = _sessionId.asStateFlow()
 
-    fun updateUsername(username: String) {
-        _dev.update {
-            _dev.value.copy(username = username)
-        }
-    }
+  fun updateUsername(username: String) {
+    _dev.update { _dev.value.copy(username = username) }
+  }
 
-    fun updateIde(ide: String) {
-        _dev.update {
-            _dev.value.copy(favoriteIde = ide)
-        }
-    }
+  fun updateIde(ide: String) {
+    _dev.update { _dev.value.copy(favoriteIde = ide) }
+  }
 
-    fun updateLang(lang: String) {
-        _dev.update {
-            _dev.value.copy(favoriteLang = lang)
-        }
-    }
+  fun updateLang(lang: String) {
+    _dev.update { _dev.value.copy(favoriteLang = lang) }
+  }
 
-    fun updateHasOnboarded(onboard: Boolean) {
-        _hasOnboarded.update {
-            onboard
-        }
-    }
+  fun updateHasOnboarded(onboard: Boolean) {
+    _hasOnboarded.update { onboard }
+  }
 
-    fun updateHasOnboardedDb(onboard: Boolean) {
-        _hasOnboardedDb.update {
-            onboard
-        }
-    }
+  fun updateHasOnboardedDb(onboard: Boolean) {
+    _hasOnboardedDb.update { onboard }
+  }
 
-    fun updateSessionId(sessionId: String) {
-        _sessionId.update {
-            sessionId
-        }
-    }
-
+  fun updateSessionId(sessionId: String) {
+    _sessionId.update { sessionId }
+  }
 }

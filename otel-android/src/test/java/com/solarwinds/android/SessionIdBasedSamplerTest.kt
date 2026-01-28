@@ -33,42 +33,48 @@ import org.junit.jupiter.params.provider.MethodSource
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class SessionIdBasedSamplerTest {
 
-    @ParameterizedTest
-    @MethodSource("rates")
-    fun samplingRateAndRealizedRateShouldNotDifferByMoreThanTenPercent(rate: Double) {
-        val tested = SessionIdBasedSampler(rate, object : SessionProvider {
-            override fun getSessionId(): String = UUID.randomUUID().toString()
-        })
+  @ParameterizedTest
+  @MethodSource("rates")
+  fun samplingRateAndRealizedRateShouldNotDifferByMoreThanTenPercent(rate: Double) {
+    val tested =
+      SessionIdBasedSampler(
+        rate,
+        object : SessionProvider {
+          override fun getSessionId(): String = UUID.randomUUID().toString()
+        },
+      )
 
-        var sampleCount = 0
+    var sampleCount = 0
 
-        val count = 1000
-        repeat(count) {
-            val samplingResult = tested.shouldSample(
-                Context.current(),
-                "",
-                "",
-                SpanKind.CLIENT,
-                Attributes.empty(),
-                emptyList()
-            )
+    val count = 1000
+    repeat(count) {
+      val samplingResult =
+        tested.shouldSample(
+          Context.current(),
+          "",
+          "",
+          SpanKind.CLIENT,
+          Attributes.empty(),
+          emptyList(),
+        )
 
-            if (samplingResult == SamplingResult.recordAndSample()) {
-                sampleCount++
-            }
-        }
-
-        val diff = sampleCount.toDouble() / count - rate
-        assertTrue(abs(diff * 100) <= 5)
+      if (samplingResult == SamplingResult.recordAndSample()) {
+        sampleCount++
+      }
     }
 
-    private fun rates(): Stream<Arguments> = Stream.of(
-        Arguments.of(0.0),
-        Arguments.of(0.1),
-        Arguments.of(0.25),
-        Arguments.of(0.50),
-        Arguments.of(0.75),
-        Arguments.of(0.98),
-        Arguments.of(1.0)
+    val diff = sampleCount.toDouble() / count - rate
+    assertTrue(abs(diff * 100) <= 5)
+  }
+
+  private fun rates(): Stream<Arguments> =
+    Stream.of(
+      Arguments.of(0.0),
+      Arguments.of(0.1),
+      Arguments.of(0.25),
+      Arguments.of(0.50),
+      Arguments.of(0.75),
+      Arguments.of(0.98),
+      Arguments.of(1.0),
     )
 }

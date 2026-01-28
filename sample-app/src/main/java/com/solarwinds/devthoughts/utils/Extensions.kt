@@ -27,4 +27,4 @@ val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "se
 fun Context.solarwindsRum() = SolarwindsRum.instance
 
 val Context.meterProviderName: String
-    get() = "com.solarwinds.dev.thoughts"
+  get() = "com.solarwinds.dev.thoughts"

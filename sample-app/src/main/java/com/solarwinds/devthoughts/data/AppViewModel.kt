@@ -22,25 +22,19 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
 class AppViewModel : ViewModel() {
-    private val _dev = MutableStateFlow<Dev?>(null)
+  private val _dev = MutableStateFlow<Dev?>(null)
 
-    private val _thoughts = MutableStateFlow<MutableList<Thought>>(mutableListOf())
+  private val _thoughts = MutableStateFlow<MutableList<Thought>>(mutableListOf())
 
-    val dev = _dev.asStateFlow()
+  val dev = _dev.asStateFlow()
 
-    val thoughts = _thoughts.asStateFlow()
+  val thoughts = _thoughts.asStateFlow()
 
-    fun updateDev(dev: Dev) {
-        _dev.update {
-            dev
-        }
-    }
+  fun updateDev(dev: Dev) {
+    _dev.update { dev }
+  }
 
-    fun updateThoughts(thoughts: List<Thought>) {
-        _thoughts.update {
-            it.apply {
-                addAll(thoughts)
-            }
-        }
-    }
+  fun updateThoughts(thoughts: List<Thought>) {
+    _thoughts.update { it.apply { addAll(thoughts) } }
+  }
 }

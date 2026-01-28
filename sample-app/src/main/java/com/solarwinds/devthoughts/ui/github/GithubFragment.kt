@@ -60,113 +60,90 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 
 class GithubFragment : Fragment() {
-    private val json = Json { ignoreUnknownKeys = true }
+  private val json = Json { ignoreUnknownKeys = true }
 
-    private val client = OkHttpClient()
+  private val client = OkHttpClient()
 
-    private val urlPlaceHolder = "https://api.github.com/users/%s/events"
+  private val urlPlaceHolder = "https://api.github.com/users/%s/events"
 
-    private val appViewModel: AppViewModel by activityViewModels()
+  private val appViewModel: AppViewModel by activityViewModels()
 
-    private lateinit var githubActivityGauge: LongGauge
+  private lateinit var githubActivityGauge: LongGauge
 
-    private var sessionId: String = "unset"
+  private var sessionId: String = "unset"
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        val solarwindsRum = context.solarwindsRum()
-        githubActivityGauge =
-            solarwindsRum
-                .meter(context.meterProviderName)
-                .gaugeBuilder("github.events")
-                .ofLongs()
-                .build()
+  override fun onAttach(context: Context) {
+    super.onAttach(context)
+    val solarwindsRum = context.solarwindsRum()
+    githubActivityGauge =
+      solarwindsRum.meter(context.meterProviderName).gaugeBuilder("github.events").ofLongs().build()
 
-        lifecycleScope.launch {
-            context.dataStore.data
-                .map { settings ->
-                    settings[sessionIdPreferenceKey] ?: "unset"
-                }.collectLatest {
-                    sessionId = it
-                }
-        }
+    lifecycleScope.launch {
+      context.dataStore.data
+        .map { settings -> settings[sessionIdPreferenceKey] ?: "unset" }
+        .collectLatest { sessionId = it }
     }
+  }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ): View =
-        content {
-            val githubActivity by fetchGitHubActivity().collectAsState(listOf(), Dispatchers.IO)
-            AppTheme {
-                if (githubActivity.isEmpty()) {
-                    Column(
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier =
-                            Modifier
-                                .fillMaxSize()
-                                .padding(16.dp),
-                    ) {
-                        Card(
-                            modifier =
-                                Modifier
-                                    .fillMaxWidth()
-                                    .height(100.dp),
-                        ) {
-                            Box(
-                                modifier =
-                                    Modifier
-                                        .padding(8.dp)
-                                        .fillMaxSize(),
-                            ) {
-                                Row(
-                                    modifier = Modifier.fillMaxSize(),
-                                    horizontalArrangement = Arrangement.Center,
-                                    verticalAlignment = Alignment.CenterVertically,
-                                ) {
-                                    Text("You don't have any activity")
-                                }
-                            }
-                        }
-                    }
-                } else {
-                    GithubActivityView(githubActivity)
-                }
+  override fun onCreateView(
+    inflater: LayoutInflater,
+    container: ViewGroup?,
+    savedInstanceState: Bundle?,
+  ): View = content {
+    val githubActivity by fetchGitHubActivity().collectAsState(listOf(), Dispatchers.IO)
+    AppTheme {
+      if (githubActivity.isEmpty()) {
+        Column(
+          verticalArrangement = Arrangement.Center,
+          horizontalAlignment = Alignment.CenterHorizontally,
+          modifier = Modifier.fillMaxSize().padding(16.dp),
+        ) {
+          Card(modifier = Modifier.fillMaxWidth().height(100.dp)) {
+            Box(modifier = Modifier.padding(8.dp).fillMaxSize()) {
+              Row(
+                modifier = Modifier.fillMaxSize(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically,
+              ) {
+                Text("You don't have any activity")
+              }
             }
+          }
         }
+      } else {
+        GithubActivityView(githubActivity)
+      }
+    }
+  }
 
-    private fun fetchGitHubActivity() =
-        flow {
-            appViewModel.dev.collect {
-                var gitHubEvents = listOf<GitHubEvent>()
-                try {
-                    val request =
-                        Request
-                            .Builder()
-                            .url(urlPlaceHolder.format(it?.username))
-                            .header("Accept", "application/vnd.github.v3+json")
-                            .build()
+  private fun fetchGitHubActivity() = flow {
+    appViewModel.dev.collect {
+      var gitHubEvents = listOf<GitHubEvent>()
+      try {
+        val request =
+          Request.Builder()
+            .url(urlPlaceHolder.format(it?.username))
+            .header("Accept", "application/vnd.github.v3+json")
+            .build()
 
-                    val response = client.newCall(request).execute()
-                    if (response.isSuccessful) {
-                        val payload = response.body.string()
-                        gitHubEvents = json.decodeFromString<List<GitHubEvent>>(payload)
-                    }
-                    githubActivityGauge.set(
-                        gitHubEvents.size.toLong(),
-                        Attributes.of(
-                            AttributeKey.stringKey("username"),
-                            it!!.username!!,
-                            AttributeKey.stringKey("session.id"),
-                            sessionId,
-                        ),
-                    )
-                    emit(gitHubEvents)
-                } catch (e: Throwable) {
-                    emit(gitHubEvents)
-                }
-            }
+        val response = client.newCall(request).execute()
+        if (response.isSuccessful) {
+          val payload = response.body.string()
+          gitHubEvents = json.decodeFromString<List<GitHubEvent>>(payload)
         }
+        githubActivityGauge.set(
+          gitHubEvents.size.toLong(),
+          Attributes.of(
+            AttributeKey.stringKey("username"),
+            it!!.username!!,
+            AttributeKey.stringKey("session.id"),
+            sessionId,
+          ),
+        )
+        emit(gitHubEvents)
+      } catch (e: Throwable) {
+        emit(gitHubEvents)
+      }
+    }
+  }
 }
