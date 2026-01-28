@@ -17,7 +17,7 @@
 package com.solarwinds.android
 
 import android.content.Context
-import io.opentelemetry.android.OpenTelemetryRum
+import io.opentelemetry.android.OpenTelemetryRumBuilder
 import io.opentelemetry.android.config.OtelRumConfig
 import io.opentelemetry.android.session.SessionProvider
 import io.opentelemetry.exporter.otlp.logs.OtlpGrpcLogRecordExporter
@@ -33,86 +33,77 @@ import java.util.UUID
 
 /** Builder for [SolarwindsRum] that simplifies configuration of the underlying OTel SDK */
 class SolarwindsRumBuilder {
-    private var collectorUrl: String? = null
-    private var apiToken: String? = null
-    private var otelRumConfig: OtelRumConfig = OtelRumConfig()
-    private var sessionProvider: SessionProvider = DEFAULT_PROVIDER
-    private var scaleRatio: Double = 0.5
+  private var collectorUrl: String = "https://otel.collector.na-01.cloud.solarwinds.com"
+  private var apiToken: String? = null
+  private var otelRumConfig: OtelRumConfig = OtelRumConfig()
+  private var sessionProvider: SessionProvider = DEFAULT_PROVIDER
+  private var scaleRatio: Double = 0.5
 
-    fun collectorUrl(collectorUrl: String): SolarwindsRumBuilder = apply {
-        this.collectorUrl = collectorUrl
-    }
+  fun collectorUrl(collectorUrl: String): SolarwindsRumBuilder = apply {
+    this.collectorUrl = collectorUrl
+  }
 
-    fun apiToken(apiToken: String): SolarwindsRumBuilder = apply {
-        this.apiToken = apiToken
-    }
+  fun apiToken(apiToken: String): SolarwindsRumBuilder = apply { this.apiToken = apiToken }
 
-    fun otelRumConfig(otelRumConfig: OtelRumConfig): SolarwindsRumBuilder = apply {
-        this.otelRumConfig = otelRumConfig
-    }
+  fun otelRumConfig(otelRumConfig: OtelRumConfig): SolarwindsRumBuilder = apply {
+    this.otelRumConfig = otelRumConfig
+  }
 
-    fun sessionProvider(sessionProvider: SessionProvider): SolarwindsRumBuilder = apply {
-        this.sessionProvider = sessionProvider
-    }
+  fun sessionProvider(sessionProvider: SessionProvider): SolarwindsRumBuilder = apply {
+    this.sessionProvider = sessionProvider
+  }
 
-    fun scaleRatio(scaleRatio: Double): SolarwindsRumBuilder = apply {
-        this.scaleRatio = scaleRatio
-    }
+  fun scaleRatio(scaleRatio: Double): SolarwindsRumBuilder = apply { this.scaleRatio = scaleRatio }
 
-    fun build(context: Context): SolarwindsRum {
-        val builder =
-            OpenTelemetryRum
-                .builder(context, otelRumConfig)
-                .mergeResource(SolarwindsResourceProvider.create())
-                .setSessionProvider(sessionProvider)
-                .addSpanExporterCustomizer(::createSpanExporter)
-                .addLogRecordExporterCustomizer(::createLogExporter)
-                .addMeterProviderCustomizer(::customizeMetricProvider)
-                .addTracerProviderCustomizer(::customizeTracerProvider)
+  fun build(context: Context): SolarwindsRum {
+    val builder =
+      OpenTelemetryRumBuilder.create(context, otelRumConfig)
+        .mergeResource(SolarwindsResourceProvider.create())
+        .setSessionProvider(sessionProvider)
+        .addSpanExporterCustomizer(::createSpanExporter)
+        .addLogRecordExporterCustomizer(::createLogExporter)
+        .addMeterProviderCustomizer(::customizeMetricProvider)
+        .addTracerProviderCustomizer(::customizeTracerProvider)
 
-        return SolarwindsRum.initialize(builder.build())
-    }
+    return SolarwindsRum.initialize(builder.build())
+  }
 
-    private fun customizeTracerProvider(
-        sdkTracerProviderBuilder: SdkTracerProviderBuilder,
-        context: Context,
-    ): SdkTracerProviderBuilder =
-        sdkTracerProviderBuilder.setSampler(SessionIdBasedSampler(scaleRatio, sessionProvider))
+  private fun customizeTracerProvider(
+    sdkTracerProviderBuilder: SdkTracerProviderBuilder,
+    context: Context,
+  ): SdkTracerProviderBuilder =
+    sdkTracerProviderBuilder.setSampler(SessionIdBasedSampler(scaleRatio, sessionProvider))
 
-    private fun createSpanExporter(spanExporter: SpanExporter): OtlpGrpcSpanExporter =
-        OtlpGrpcSpanExporter
-            .builder()
-            .setEndpoint(collectorUrl)
-            .addHeader("authorization", "Bearer $apiToken")
-            .build()
+  private fun createSpanExporter(spanExporter: SpanExporter): OtlpGrpcSpanExporter =
+    OtlpGrpcSpanExporter.builder()
+      .setEndpoint(collectorUrl)
+      .addHeader("authorization", "Bearer $apiToken")
+      .build()
 
-    private fun customizeMetricProvider(
-        sdkMeterProviderBuilder: SdkMeterProviderBuilder,
-        context: Context,
-    ): SdkMeterProviderBuilder {
-        val metricExporter =
-            OtlpGrpcMetricExporter
-                .builder()
-                .setEndpoint(collectorUrl)
-                .addHeader("authorization", "Bearer $apiToken")
-                .setAggregationTemporalitySelector(AggregationTemporalitySelector.deltaPreferred())
-                .build()
+  private fun customizeMetricProvider(
+    sdkMeterProviderBuilder: SdkMeterProviderBuilder,
+    context: Context,
+  ): SdkMeterProviderBuilder {
+    val metricExporter =
+      OtlpGrpcMetricExporter.builder()
+        .setEndpoint(collectorUrl)
+        .addHeader("authorization", "Bearer $apiToken")
+        .setAggregationTemporalitySelector(AggregationTemporalitySelector.deltaPreferred())
+        .build()
 
-        return sdkMeterProviderBuilder.registerMetricReader(
-            PeriodicMetricReader.create(metricExporter),
-        )
-    }
+    return sdkMeterProviderBuilder.registerMetricReader(PeriodicMetricReader.create(metricExporter))
+  }
 
-    private fun createLogExporter(logRecordExporter: LogRecordExporter): OtlpGrpcLogRecordExporter =
-        OtlpGrpcLogRecordExporter
-            .builder()
-            .setEndpoint(collectorUrl)
-            .addHeader("authorization", "Bearer $apiToken")
-            .build()
+  private fun createLogExporter(logRecordExporter: LogRecordExporter): OtlpGrpcLogRecordExporter =
+    OtlpGrpcLogRecordExporter.builder()
+      .setEndpoint(collectorUrl)
+      .addHeader("authorization", "Bearer $apiToken")
+      .build()
 
-    companion object {
-        private val DEFAULT_PROVIDER = object : SessionProvider {
-            override fun getSessionId(): String = UUID.randomUUID().toString()
-        }
-    }
+  companion object {
+    private val DEFAULT_PROVIDER =
+      object : SessionProvider {
+        override fun getSessionId(): String = UUID.randomUUID().toString()
+      }
+  }
 }

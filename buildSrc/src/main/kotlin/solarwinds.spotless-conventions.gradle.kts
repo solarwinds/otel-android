@@ -5,18 +5,13 @@ plugins {
 }
 
 spotless {
-    java {
-        googleJavaFormat().aosp()
-        target("src/**/*.java")
+    kotlin {
+        ktfmt("0.61").googleStyle().configure {
+            it.setRemoveUnusedImports(true)
+        }
+
         licenseHeaderFile(rootProject.file("gradle/spotless.license.java"), "(package|import|public)")
-    }
-
-    plugins.withId("org.jetbrains.kotlin.jvm") {
-        configureKotlin(this@spotless)
-    }
-
-    plugins.withId("org.jetbrains.kotlin.android") {
-        configureKotlin(this@spotless)
+        target("src/**/*.kt")
     }
 
     kotlinGradle {
@@ -48,27 +43,13 @@ if (project == rootProject) {
     spotless {
         predeclareDeps()
     }
+
     with(extensions["spotlessPredeclare"] as SpotlessExtension) {
-        java {
-            googleJavaFormat()
-        }
         kotlin {
-            ktlint()
+            ktfmt()
         }
         kotlinGradle {
             ktlint()
         }
-    }
-}
-
-fun configureKotlin(
-    spotlessExtension: SpotlessExtension,
-) {
-    spotlessExtension.kotlin {
-        licenseHeaderFile(
-            rootProject.file("gradle/spotless.license.java"),
-            "(package|import|public)"
-        )
-        target("src/**/*.kt")
     }
 }

@@ -11,6 +11,7 @@ android {
 dependencies {
     api(platform(libs.opentelemetry.bom))
     api(libs.opentelemetry.android.core)
+    api(libs.opentelemetry.android.api)
     api(libs.opentelemetry.api)
 
     api(libs.assertj.core)

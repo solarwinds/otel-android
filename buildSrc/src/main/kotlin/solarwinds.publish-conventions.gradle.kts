@@ -16,24 +16,6 @@ android {
     }
 }
 
-afterEvaluate {
-    val javadoc by tasks.registering(Javadoc::class) {
-        source = android.sourceSets.named("main").get().java.getSourceFiles()
-        classpath += project.files(android.bootClasspath)
-
-        // grab the library variants, because apparently this is where the real classpath lives that
-        // is needed for javadoc generation.
-        val firstVariant = project.android.libraryVariants.toList().first()
-        val javaCompile = firstVariant.javaCompileProvider.get()
-        classpath += javaCompile.classpath
-        classpath += javaCompile.outputs.files
-
-        with(options as StandardJavadocDocletOptions) {
-            addBooleanOption("Xdoclint:all,-missing", true)
-        }
-    }
-}
-
 
 val versionSuffix: String? = System.getenv("SW_RUM_VERSION_SUFFIX")
 publishing {

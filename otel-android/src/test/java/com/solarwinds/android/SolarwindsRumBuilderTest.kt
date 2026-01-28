@@ -31,55 +31,54 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 class SolarwindsRumBuilderTest {
-    private val context: Context = mockk()
-    private val mockOtelRumBuilder: OpenTelemetryRumBuilder = mockk()
-    private val mockSessionProvider: SessionProvider = mockk()
-    private val mockRumInstance: OpenTelemetryRum = mockk()
+  private val context: Context = mockk()
+  private val mockOtelRumBuilder: OpenTelemetryRumBuilder = mockk()
+  private val mockSessionProvider: SessionProvider = mockk()
+  private val mockRumInstance: OpenTelemetryRum = mockk()
 
-    private lateinit var solarwindsRumBuilder: SolarwindsRumBuilder
+  private lateinit var solarwindsRumBuilder: SolarwindsRumBuilder
 
-    @BeforeEach
-    fun setup() {
-        solarwindsRumBuilder = SolarwindsRumBuilder()
-            .collectorUrl("http://example.com")
-            .apiToken("test_token")
-            .sessionProvider(mockSessionProvider)
-            .scaleRatio(0.75)
-    }
+  @BeforeEach
+  fun setup() {
+    solarwindsRumBuilder =
+      SolarwindsRumBuilder()
+        .collectorUrl("http://example.com")
+        .apiToken("test_token")
+        .sessionProvider(mockSessionProvider)
+        .scaleRatio(0.75)
+  }
 
-    @AfterEach
-    fun tearDown() {
-        unmockkAll()
-    }
+  @AfterEach
+  fun tearDown() {
+    unmockkAll()
+  }
 
-    @Test
-    fun verifyBuilderMethodsAreCalled() {
-        // Mock the companion object for Kotlin classes
-        mockkObject(OpenTelemetryRum)
-        mockkObject(SolarwindsRum)
+  @Test
+  fun verifyBuilderMethodsAreCalled() {
+    mockkObject(OpenTelemetryRumBuilder)
+    mockkObject(SolarwindsRum)
 
-        every { 
-            OpenTelemetryRum.builder(any<Context>(), any<OtelRumConfig>()) 
-        } returns mockOtelRumBuilder
-        
-        every { mockOtelRumBuilder.mergeResource(any()) } returns mockOtelRumBuilder
-        every { mockOtelRumBuilder.setSessionProvider(any()) } returns mockOtelRumBuilder
-        every { mockOtelRumBuilder.addSpanExporterCustomizer(any()) } returns mockOtelRumBuilder
-        every { mockOtelRumBuilder.addLogRecordExporterCustomizer(any()) } returns mockOtelRumBuilder
-        every { mockOtelRumBuilder.addMeterProviderCustomizer(any()) } returns mockOtelRumBuilder
-        every { mockOtelRumBuilder.addTracerProviderCustomizer(any()) } returns mockOtelRumBuilder
-        every { mockOtelRumBuilder.build() } returns mockRumInstance
-        every { SolarwindsRum.initialize(any()) } returns mockk()
+    every { OpenTelemetryRumBuilder.create(any<Context>(), any<OtelRumConfig>()) } returns
+      mockOtelRumBuilder
 
-        solarwindsRumBuilder.build(context)
+    every { mockOtelRumBuilder.mergeResource(any()) } returns mockOtelRumBuilder
+    every { mockOtelRumBuilder.setSessionProvider(any()) } returns mockOtelRumBuilder
+    every { mockOtelRumBuilder.addSpanExporterCustomizer(any()) } returns mockOtelRumBuilder
+    every { mockOtelRumBuilder.addLogRecordExporterCustomizer(any()) } returns mockOtelRumBuilder
+    every { mockOtelRumBuilder.addMeterProviderCustomizer(any()) } returns mockOtelRumBuilder
+    every { mockOtelRumBuilder.addTracerProviderCustomizer(any()) } returns mockOtelRumBuilder
+    every { mockOtelRumBuilder.build() } returns mockRumInstance
+    every { SolarwindsRum.initialize(any()) } returns mockk()
 
-        verify { mockOtelRumBuilder.mergeResource(any()) }
-        verify { mockOtelRumBuilder.setSessionProvider(mockSessionProvider) }
-        verify { mockOtelRumBuilder.addSpanExporterCustomizer(any()) }
-        verify { mockOtelRumBuilder.addLogRecordExporterCustomizer(any()) }
-        verify { mockOtelRumBuilder.addMeterProviderCustomizer(any()) }
-        verify { mockOtelRumBuilder.addTracerProviderCustomizer(any()) }
-        verify { mockOtelRumBuilder.build() }
-        verify { SolarwindsRum.initialize(mockRumInstance) }
-    }
+    solarwindsRumBuilder.build(context)
+
+    verify { mockOtelRumBuilder.mergeResource(any()) }
+    verify { mockOtelRumBuilder.setSessionProvider(mockSessionProvider) }
+    verify { mockOtelRumBuilder.addSpanExporterCustomizer(any()) }
+    verify { mockOtelRumBuilder.addLogRecordExporterCustomizer(any()) }
+    verify { mockOtelRumBuilder.addMeterProviderCustomizer(any()) }
+    verify { mockOtelRumBuilder.addTracerProviderCustomizer(any()) }
+    verify { mockOtelRumBuilder.build() }
+    verify { SolarwindsRum.initialize(mockRumInstance) }
+  }
 }

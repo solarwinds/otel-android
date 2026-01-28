@@ -26,6 +26,7 @@ android {
 dependencies {
     api(platform(libs.opentelemetry.bom))
     api(libs.opentelemetry.android.core)
+    api(libs.opentelemetry.android.api)
     api(libs.opentelemetry.android.session)
 
     implementation(libs.androidx.core.ktx)

@@ -22,67 +22,55 @@ import io.opentelemetry.api.incubator.logs.ExtendedLogger
 import io.opentelemetry.api.metrics.Meter
 
 /**
- * SolarwindsRum provides an interface for generating OTel telemetry.
- * This class is a singleton and should be initialized using {@link SolarwindsRumBuilder}.
+ * SolarwindsRum provides an interface for generating OTel telemetry. This class is a singleton and
+ * should be initialized using {@link SolarwindsRumBuilder}.
  */
-class SolarwindsRum private constructor(
-    private val openTelemetryRum: OpenTelemetryRum,
-) {
-    private val logger: ExtendedLogger =
-        openTelemetryRum.getOpenTelemetry().logsBridge
-            .loggerBuilder("com.solarwinds.android.rum.logs")
-            .build() as ExtendedLogger
+class SolarwindsRum private constructor(private val openTelemetryRum: OpenTelemetryRum) {
+  private val logger: ExtendedLogger =
+    openTelemetryRum.openTelemetry.logsBridge
+      .loggerBuilder("com.solarwinds.android.rum.logs")
+      .build() as ExtendedLogger
+
+  /**
+   * Emits a log event with the specified name, body, and attributes.
+   *
+   * @param name The name of the event.
+   * @param body The body of the log event. Defaults to an empty string if not provided.
+   * @param attributes Additional attributes for the log event. Defaults to an empty set if not
+   *   provided.
+   */
+  @JvmOverloads
+  fun emitEvent(name: String, body: String = "", attributes: Attributes = Attributes.empty()) {
+    logger.logRecordBuilder().setEventName(name).setBody(body).setAllAttributes(attributes).emit()
+  }
+
+  /**
+   * Retrieves a {@link Meter} instance for the specified scope.
+   *
+   * @param scope The name of the meter scope.
+   * @return A {@link Meter} instance for collecting metrics.
+   */
+  fun meter(scope: String): Meter = openTelemetryRum.openTelemetry.getMeter(scope)
+
+  /** Companion object that holds the singleton instance of {@link SolarwindsRum}. */
+  companion object {
+    lateinit var instance: SolarwindsRum
+    private var initialized = false
 
     /**
-     * Emits a log event with the specified name, body, and attributes.
+     * Initializes the SolarwindsRum singleton with the given OpenTelemetryRum instance. If already
+     * initialized, the existing instance is returned.
      *
-     * @param name The name of the event.
-     * @param body The body of the log event. Defaults to an empty string if not provided.
-     * @param attributes Additional attributes for the log event. Defaults to an empty set if not provided.
+     * @param openTelemetryRum The OpenTelemetryRum instance to use.
+     * @return The initialized SolarwindsRum instance.
      */
-    @JvmOverloads
-    fun emitEvent(
-        name: String,
-        body: String = "",
-        attributes: Attributes = Attributes.empty(),
-    ) {
-        logger
-            .logRecordBuilder()
-            .setEventName(name)
-            .setBody(body)
-            .setAllAttributes(attributes)
-            .emit()
+    @JvmStatic
+    fun initialize(openTelemetryRum: OpenTelemetryRum): SolarwindsRum {
+      if (!initialized) {
+        instance = SolarwindsRum(openTelemetryRum)
+      }
+
+      return instance
     }
-
-    /**
-     * Retrieves a {@link Meter} instance for the specified scope.
-     *
-     * @param scope The name of the meter scope.
-     * @return A {@link Meter} instance for collecting metrics.
-     */
-    fun meter(scope: String): Meter = openTelemetryRum.getOpenTelemetry().getMeter(scope)
-
-    /**
-     * Companion object that holds the singleton instance of {@link SolarwindsRum}.
-     */
-    companion object {
-        lateinit var instance: SolarwindsRum
-        private var initialized = false
-
-        /**
-         * Initializes the SolarwindsRum singleton with the given OpenTelemetryRum instance.
-         * If already initialized, the existing instance is returned.
-         *
-         * @param openTelemetryRum The OpenTelemetryRum instance to use.
-         * @return The initialized SolarwindsRum instance.
-         */
-        @JvmStatic
-        fun initialize(openTelemetryRum: OpenTelemetryRum): SolarwindsRum {
-            if (!initialized) {
-                instance = SolarwindsRum(openTelemetryRum)
-            }
-
-            return instance
-        }
-    }
+  }
 }
