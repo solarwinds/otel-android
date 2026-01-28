@@ -2,7 +2,6 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     id("com.android.library")
-    id("org.jetbrains.kotlin.android")
 }
 
 val variantToPublish = "release"
@@ -24,12 +23,14 @@ android {
         warningsAsErrors = false
         disable.add("NullSafeMutableLiveData")
     }
-}
 
-tasks.withType<Test> {
-    useJUnitPlatform()
-    testLogging {
-        events("passed", "failed")
+    testOptions {
+        unitTests.all {
+            it.useJUnitPlatform()
+            it.testLogging {
+                events("passed", "failed")
+            }
+        }
     }
 }
 

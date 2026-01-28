@@ -4,7 +4,6 @@ import java.util.Properties
 
 plugins {
     id("com.android.application")
-    id("org.jetbrains.kotlin.android")
     id("net.bytebuddy.byte-buddy-gradle-plugin")
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.ksp)
@@ -29,6 +28,10 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildFeatures {
+        resValues = true
     }
 
     buildTypes {

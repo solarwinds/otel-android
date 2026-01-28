@@ -18,7 +18,8 @@ package com.solarwinds.android.test.common
 
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.platform.app.InstrumentationRegistry
-import io.opentelemetry.android.OpenTelemetryRum
+import io.opentelemetry.android.OpenTelemetryRumBuilder
+import io.opentelemetry.android.config.OtelRumConfig
 import io.opentelemetry.sdk.logs.export.SimpleLogRecordProcessor
 import io.opentelemetry.sdk.testing.exporter.InMemoryLogRecordExporter
 import org.junit.rules.TestRule
@@ -26,29 +27,24 @@ import org.junit.runner.Description
 import org.junit.runners.model.Statement
 
 class SolarwindsRumRule : TestRule {
-    lateinit var inMemoryLogExporter: InMemoryLogRecordExporter
+  lateinit var inMemoryLogExporter: InMemoryLogRecordExporter
 
-    override fun apply(
-        base: Statement,
-        description: Description,
-    ): Statement =
-        object : Statement() {
-            override fun evaluate() {
-                setUpOpenTelemetry()
-                base.evaluate()
-            }
-        }
-
-    private fun setUpOpenTelemetry() {
-        inMemoryLogExporter = InMemoryLogRecordExporter.create()
-        InstrumentationRegistry.getInstrumentation().runOnMainSync {
-            OpenTelemetryRum
-                .builder(ApplicationProvider.getApplicationContext())
-                .addLoggerProviderCustomizer { logger, _ ->
-                    logger.addLogRecordProcessor(
-                        SimpleLogRecordProcessor.create(inMemoryLogExporter),
-                    )
-                }.build()
-        }
+  override fun apply(base: Statement, description: Description): Statement =
+    object : Statement() {
+      override fun evaluate() {
+        setUpOpenTelemetry()
+        base.evaluate()
+      }
     }
+
+  private fun setUpOpenTelemetry() {
+    inMemoryLogExporter = InMemoryLogRecordExporter.create()
+    InstrumentationRegistry.getInstrumentation().runOnMainSync {
+      OpenTelemetryRumBuilder.create(ApplicationProvider.getApplicationContext(), OtelRumConfig())
+        .addLoggerProviderCustomizer { logger, _ ->
+          logger.addLogRecordProcessor(SimpleLogRecordProcessor.create(inMemoryLogExporter))
+        }
+        .build()
+    }
+  }
 }
