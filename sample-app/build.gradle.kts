@@ -7,7 +7,7 @@ plugins {
     id("net.bytebuddy.byte-buddy-gradle-plugin")
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.ksp)
-    kotlin("plugin.serialization") version "2.2.21"
+    kotlin("plugin.serialization") version "2.3.0"
 }
 
 val localProperties = Properties()
