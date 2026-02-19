@@ -106,4 +106,4 @@ junit = ["junit-jupiter", "junit-vintage-engine", "junit-platform-launcher", "ju
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
 publishPlugin = { id = "io.github.gradle-nexus.publish-plugin", version = "2.0.0" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-ksp = { id = "com.google.devtools.ksp", version = "2.3.4" }
+ksp = { id = "com.google.devtools.ksp", version = "2.3.5" }
