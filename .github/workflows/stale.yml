@@ -25,4 +25,6 @@ jobs:
             to continue working on it.
           days-before-pr-stale: 7
           days-before-pr-close: 7
+          days-before-issue-stale: -1
+          days-before-issue-close: -1
           stale-pr-label: stale
