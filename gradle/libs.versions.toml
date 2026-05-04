@@ -2,7 +2,7 @@
 agp = "9.0.0"
 datastorePreferences = "1.2.0"
 fragmentCompose = "1.8.9"
-kotlin = "2.2.21"
+kotlin = "2.3.21"
 coreKtx = "1.17.0"
 #noinspection GradleDependency,NewerVersionAvailable
 junit5 = "5.11.4"
