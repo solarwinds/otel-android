@@ -34,7 +34,7 @@ room_version = "2.8.4"
 navigation-compose = "2.9.7"
 
 [libraries]
-androidx-annotation = "androidx.annotation:annotation:1.9.1"
+androidx-annotation = "androidx.annotation:annotation:1.10.0"
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
 androidx-fragment-compose = { module = "androidx.fragment:fragment-compose", version.ref = "fragmentCompose" }
 androidx-room = { module = "androidx.room:room-runtime", version.ref = "room_version" }
