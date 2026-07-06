@@ -89,7 +89,7 @@ kotlin-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.
 
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit5" }
 junit-vintage-engine = { module = "org.junit.vintage:junit-vintage-engine", version.ref = "junit5" }
-junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher", version = "1.14.2" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher", version = "6.1.1" }
 junit-junit4 = { module = "junit:junit", version.ref = "junit4" }
 robolectric = { module = "org.robolectric:robolectric", version.ref = "robocop" }
 assertj-core = "org.assertj:assertj-core:3.27.7"
