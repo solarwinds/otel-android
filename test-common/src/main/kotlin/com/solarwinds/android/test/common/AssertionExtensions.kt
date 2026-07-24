@@ -25,7 +25,9 @@ fun LogRecordDataAssert.hasEventName(eventName: String): LogRecordDataAssert {
   val getEventNameMethod = actual.javaClass.methods.find {
     it.name == "getEventName" && it.parameterCount == 0
   }
-  assertThat(getEventNameMethod).isNotNull()
+  assertThat(getEventNameMethod)
+      .withFailMessage("Expected %s to declare getEventName()", actual.javaClass.name)
+      .isNotNull()
   assertThat(getEventNameMethod!!.invoke(actual)).isEqualTo(eventName)
   return this
 }
