@@ -28,6 +28,14 @@ fun LogRecordDataAssert.hasEventName(eventName: String): LogRecordDataAssert {
   assertThat(getEventNameMethod)
       .withFailMessage("Expected %s to declare getEventName()", actual.javaClass.name)
       .isNotNull()
-  assertThat(getEventNameMethod!!.invoke(actual)).isEqualTo(eventName)
+  val actualEventName = getEventNameMethod!!.invoke(actual)
+  assertThat(actualEventName)
+      .withFailMessage(
+          "Expected eventName to be %s but was %s for %s",
+          eventName,
+          actualEventName,
+          actual.javaClass.name,
+      )
+      .isEqualTo(eventName)
   return this
 }
