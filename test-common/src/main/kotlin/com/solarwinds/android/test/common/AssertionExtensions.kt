@@ -16,13 +16,16 @@
 
 package com.solarwinds.android.test.common
 
-import io.opentelemetry.sdk.logs.data.internal.ExtendedLogRecordData
 import io.opentelemetry.sdk.testing.assertj.LogRecordDataAssert
 import io.opentelemetry.sdk.testing.assertj.OpenTelemetryAssertions.assertThat
 
 fun LogRecordDataAssert.hasEventName(eventName: String): LogRecordDataAssert {
   isNotNull()
-  assertThat(this.actual()).isInstanceOf(ExtendedLogRecordData::class.java)
-  assertThat((this.actual() as ExtendedLogRecordData).eventName).isEqualTo(eventName)
+  val actual = this.actual()
+  val getEventNameMethod = actual.javaClass.methods.find {
+    it.name == "getEventName" && it.parameterCount == 0
+  }
+  assertThat(getEventNameMethod).isNotNull()
+  assertThat(getEventNameMethod!!.invoke(actual)).isEqualTo(eventName)
   return this
 }
