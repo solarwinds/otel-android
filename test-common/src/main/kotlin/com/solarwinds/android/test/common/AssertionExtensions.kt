@@ -22,13 +22,11 @@ import io.opentelemetry.sdk.testing.assertj.OpenTelemetryAssertions.assertThat
 fun LogRecordDataAssert.hasEventName(eventName: String): LogRecordDataAssert {
   isNotNull()
   val actual = this.actual()
-  val getEventNameMethod = actual.javaClass.methods.find {
+  val eventNameMethod = actual.javaClass.methods.find {
     it.name == "getEventName" && it.parameterCount == 0
   }
-  assertThat(getEventNameMethod)
-      .withFailMessage("Expected %s to declare getEventName()", actual.javaClass.name)
-      .isNotNull()
-  val actualEventName = getEventNameMethod!!.invoke(actual)
+      ?: error("Expected ${actual.javaClass.name} to declare getEventName()")
+  val actualEventName = eventNameMethod.invoke(actual)
   assertThat(actualEventName)
       .withFailMessage(
           "Expected eventName to be %s but was %s for %s",
