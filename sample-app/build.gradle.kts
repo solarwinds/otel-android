@@ -18,7 +18,7 @@ if (!ci) {
 
 android {
     namespace = "com.solarwinds.devthoughts"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.solarwinds.devthoughts"

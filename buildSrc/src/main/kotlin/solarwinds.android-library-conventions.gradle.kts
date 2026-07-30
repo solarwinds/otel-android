@@ -8,7 +8,7 @@ val variantToPublish = "release"
 val swoRumVersion: String by rootProject.extra
 
 android {
-    compileSdk = 36
+    compileSdk = 37
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
