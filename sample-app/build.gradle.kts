@@ -18,12 +18,12 @@ if (!ci) {
 
 android {
     namespace = "com.solarwinds.devthoughts"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.solarwinds.devthoughts"
         minSdk = 24
-        targetSdk = 36
+        targetSdk = 37
         versionCode = 1
         versionName = "1.0"
 
