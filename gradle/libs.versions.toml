@@ -1,7 +1,7 @@
 [versions]
 agp = "9.3.1"
 datastorePreferences = "1.2.1"
-fragmentCompose = "1.8.9"
+fragmentCompose = "1.9.1"
 kotlin = "2.4.10"
 coreKtx = "1.19.0"
 junit5 = "6.1.3"
