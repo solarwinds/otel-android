@@ -56,7 +56,7 @@ androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigation-compose" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
-kotlin-serialization = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.11.0"
+kotlin-serialization = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.13.0"
 okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 
 opentelemetry-bom = { module = "io.opentelemetry:opentelemetry-bom", version.ref = "opentelemetry-sdk" }
